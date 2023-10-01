@@ -1,4 +1,48 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import {
+  faUser,
+  faFileLines,
+  faPaintbrush,
+  faTrashCan,
+  faDownload,
+  faChevronDown,
+  faChevronUp,
+  faGraduationCap,
+  faBriefcase,
+  faGear,
+  faMicrochip,
+  faCertificate,
+  faLanguage,
+  faEnvelope,
+  faPhone,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(
+  faUser,
+  faFileLines,
+  faPaintbrush,
+  faTrashCan,
+  faDownload,
+  faEye,
+  faEyeSlash,
+  faChevronDown,
+  faChevronUp,
+  faGraduationCap,
+  faBriefcase,
+  faGear,
+  faMicrochip,
+  faCertificate,
+  faLanguage,
+  faEnvelope,
+  faPhone,
+  faLocationDot,
+  faGithub
+);
 
 export default function App() {
   return (
@@ -17,7 +61,8 @@ function Logo() {
   return (
     <header>
       <h1>
-        <i className="bi bi-person-circle"></i> <span>CV Application</span>
+        <img src="../public/woman.svg" alt="woman" />{" "}
+        <span>CV Application</span> <img src="../public/man.svg" alt="man" />
       </h1>
     </header>
   );
@@ -29,16 +74,32 @@ function AddInformationSection() {
       <ModeBox />
       <DetailBox />
 
-      <InformationBox title="Personal Details">
+      <InformationBox title="Personal Details" icon={faUser}>
         <PersonalForm />
       </InformationBox>
 
-      <InformationBox title="Education">
+      <InformationBox title="Education" icon={faGraduationCap}>
         <EducationLists />
       </InformationBox>
 
-      <InformationBox title="Experience">
+      <InformationBox title="Experience" icon={faBriefcase}>
         <ExperienceLists />
+      </InformationBox>
+
+      <InformationBox title="Project" icon={faGear}>
+        <ProjectLists />
+      </InformationBox>
+
+      <InformationBox title="Technology" icon={faMicrochip}>
+        <TechnologyLists />
+      </InformationBox>
+
+      <InformationBox title="Certificate" icon={faCertificate}>
+        <CertificateLists />
+      </InformationBox>
+
+      <InformationBox title="Language" icon={faLanguage}>
+        <LanguageLists />
       </InformationBox>
     </aside>
   );
@@ -48,10 +109,10 @@ function ModeBox() {
   return (
     <div className="mode-box">
       <Button>
-        <i className="bi bi-file-text-fill"></i> <span>Content</span>
+        <FontAwesomeIcon icon={faFileLines} /> <span>Content</span>
       </Button>
       <Button>
-        <i className="bi bi-brush-fill"></i> <span>Customize</span>
+        <FontAwesomeIcon icon={faPaintbrush} /> <span>Customize</span>
       </Button>
     </div>
   );
@@ -61,7 +122,7 @@ function DetailBox() {
   return (
     <div className="detail-box">
       <Button>
-        <i className="bi bi-trash-fill"></i> <span>Clear detail</span>
+        <FontAwesomeIcon icon={faTrashCan} /> <span>Clear detail</span>
       </Button>
       <Button>Demo detail</Button>
       <SaveButton />
@@ -73,16 +134,21 @@ function SaveButton() {
   return (
     <Button className="save-button">
       <span>
-        <i className="bi bi-download"></i> <span>Save</span>
+        <FontAwesomeIcon icon={faDownload} /> <span>Save</span>
       </span>
     </Button>
   );
 }
 
-function InformationBox({ title, children }) {
+function InformationBox({ title, icon = "", children }) {
   return (
     <div>
-      <h1>{title}</h1>
+      <header>
+        <h1>
+          <FontAwesomeIcon icon={icon} /> <span>{title}</span>{" "}
+          <FontAwesomeIcon icon={faChevronDown} />
+        </h1>
+      </header>
       {children}
     </div>
   );
@@ -106,7 +172,7 @@ function EducationLists() {
     <>
       <ul>
         {/* map */}
-        <Education />
+        <List>KU</List>
         {/* hide */}
       </ul>
       <Button>+ Add</Button>
@@ -115,31 +181,14 @@ function EducationLists() {
   );
 }
 
-function Education() {
-  return (
-    <li>
-      {/* need to get props */}
-      <Button>KU</Button>
-      <Button>
-        <i className="bi bi-eye"></i>
-      </Button>
-    </li>
-  );
-}
-
 function EducationForm() {
   return (
-    <form>
+    <Form>
       <Input>School</Input>
       <Input>Degree</Input>
       <Input>Start Date</Input>
       <Input>End Date</Input>
-      <button>
-        <i className="bi bi-trash-fill"></i> <span>Delete</span>
-      </button>
-      <button>Cancel</button>
-      <button>Save</button>
-    </form>
+    </Form>
   );
 }
 
@@ -147,7 +196,7 @@ function ExperienceLists() {
   return (
     <>
       <ul>
-        <Experience />
+        <List>AAM</List>
       </ul>
       <Button>+ Add</Button>
       <ExperienceForm />
@@ -155,27 +204,120 @@ function ExperienceLists() {
   );
 }
 
-function Experience() {
+function ExperienceForm() {
+  return (
+    <Form>
+      <Input>Company Name</Input>
+      <Input>Position</Input>
+      <Input>Start Date</Input>
+      <Input>End Date</Input>
+      <TextArea>Description</TextArea>
+    </Form>
+  );
+}
+
+function ProjectLists() {
+  return (
+    <>
+      <ul>
+        <List>AAM</List>
+      </ul>
+      <Button>+ Add</Button>
+      <ProjectForm />
+    </>
+  );
+}
+
+function ProjectForm() {
+  return (
+    <Form>
+      <Input>Project Name</Input>
+      <TextArea>Description</TextArea>
+    </Form>
+  );
+}
+
+function TechnologyLists() {
+  return (
+    <>
+      <ul>
+        <List>Stack</List>
+      </ul>
+      <Button>+ Add</Button>
+      <TechnologyForm />
+    </>
+  );
+}
+
+function TechnologyForm() {
+  return (
+    <Form>
+      <Input>Categories</Input>
+      <TextArea>Tools</TextArea>
+    </Form>
+  );
+}
+
+function CertificateLists() {
+  return (
+    <>
+      <ul>
+        <List>React</List>
+      </ul>
+      <Button>+ Add</Button>
+      <CertificateForm />
+    </>
+  );
+}
+
+function CertificateForm() {
+  return (
+    <Form>
+      <Input>Course Name</Input>
+      <Input>Year</Input>
+      <TextArea>Description</TextArea>
+    </Form>
+  );
+}
+
+function LanguageLists() {
+  return (
+    <>
+      <ul>
+        <List>TOEIC</List>
+      </ul>
+      <Button>+ Add</Button>
+      <LanguageForm />
+    </>
+  );
+}
+
+function LanguageForm() {
+  return (
+    <Form>
+      <Input>Test Name</Input>
+      <Input>Scores</Input>
+    </Form>
+  );
+}
+
+function List({ children }) {
   return (
     <li>
-      <Button>AAM</Button>
+      <Button>{children}</Button>
       <Button>
-        <i className="bi bi-eye"></i>
+        <FontAwesomeIcon icon={faEye} />
       </Button>
     </li>
   );
 }
 
-function ExperienceForm() {
+function Form({ children }) {
   return (
     <form>
-      <Input>Company Name</Input>
-      <Input>Position</Input>
-      <Input>Start Date</Input>
-      <Input>End Date</Input>
-      <Input>Description</Input>
+      {children}
       <button>
-        <i className="bi bi-trash-fill"></i> <span>Delete</span>
+        <FontAwesomeIcon icon={faTrashCan} /> <span>Delete</span>
       </button>
       <button>Cancel</button>
       <button>Save</button>
@@ -212,15 +354,14 @@ function CVPage() {
         <h1>Arpawan Vanichwattana</h1>
         <div className="">
           <p>
-            <i className="bi bi-envelope-fill"></i>{" "}
+            <FontAwesomeIcon icon={faEnvelope} />{" "}
             <span>arpawan.v@gmail.com</span>
           </p>
           <p>
-            <i className="bi bi-telephone-fill"></i>{" "}
-            <span>+66 092 690 0880</span>
+            <FontAwesomeIcon icon={faPhone} /> <span>+66 092 690 0880</span>
           </p>
           <p>
-            <i className="bi bi-geo-alt-fill"></i>{" "}
+            <FontAwesomeIcon icon={faLocationDot} />{" "}
             <span>SamutPrakarn, Thailand</span>
           </p>
         </div>
@@ -272,14 +413,9 @@ function Footer() {
   return (
     <footer className="footer">
       <a href="">
-        <i className="bi bi-github"></i>
+        <FontAwesomeIcon icon={faGithub} />
       </a>
       <p>&copy; Copyright by avanich28</p>
     </footer>
   );
 }
-
-// projects (name, description)
-// technologies (categories, tool)
-// certifications (name, year, description)
-// languages (name, score)

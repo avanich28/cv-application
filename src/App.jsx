@@ -118,7 +118,7 @@ function ModeBox() {
   );
 }
 
-function DetailBox() {
+function DetailBox({ onClickClear, onClickDemo }) {
   return (
     <div className="detail-box">
       <Button>
@@ -130,9 +130,9 @@ function DetailBox() {
   );
 }
 
-function SaveButton() {
+function SaveButton({ onClick }) {
   return (
-    <Button className="save-button">
+    <Button className="save-btn">
       <span>
         <FontAwesomeIcon icon={faDownload} /> <span>Save</span>
       </span>
@@ -140,7 +140,7 @@ function SaveButton() {
   );
 }
 
-function InformationBox({ title, icon = "", children }) {
+function InformationBox({ title, icon, children }) {
   return (
     <div>
       <header>
@@ -186,6 +186,9 @@ function EducationForm() {
     <Form>
       <Input>School</Input>
       <Input>Degree</Input>
+      <Input>Major</Input>
+      <Input>Minor</Input>
+      <Input>GPA</Input>
       <Input>Start Date</Input>
       <Input>End Date</Input>
     </Form>
@@ -252,7 +255,6 @@ function TechnologyLists() {
 function TechnologyForm() {
   return (
     <Form>
-      <Input>Categories</Input>
       <TextArea>Tools</TextArea>
     </Form>
   );
@@ -347,9 +349,22 @@ function TextArea({ children }) {
   );
 }
 
-function CVPage() {
+function CVPage({
+  firstName,
+  lastName,
+  email,
+  tel,
+  address,
+  intro,
+  allEducations,
+  allExperiences,
+  allProjects,
+  tech,
+  allCertificates,
+  allLanguages,
+}) {
   return (
-    <section>
+    <section className="cv-page">
       <header>
         <h1>Arpawan Vanichwattana</h1>
         <div className="">
@@ -368,45 +383,120 @@ function CVPage() {
       </header>
       <main>
         <p>Looking forward to work in Fullstack position</p>
-        <section>
-          <h1>Education</h1>
-          <div>
-            <p>12/08/2020 - present</p>
-            <p>Bangkok, TH</p>
-          </div>
-          <div>
-            <h2>KU</h2>
-            <p>Bachelors of Economics</p>
-          </div>
-        </section>
-        <section>
-          <h1>Experience</h1>
-          <div>
-            <p>12/08/2020 - present</p>
-            <p>Bangkok, TH</p>
-          </div>
-          <div>
-            <h2>AAM</h2>
-            <h3>Export Sales</h3>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio
-              illum quo doloribus, repudiandae dolor aspernatur non cupiditate
-              at eos, sunt aperiam nam libero cumque dignissimos nostrum totam
-              adipisci dolorem explicabo?
-            </p>
-          </div>
-        </section>
-        <section>
-          <h2>Javascript, 2023</h2>
-          <p>Online course</p>
-        </section>
+        {/* check && */}
+        <ContentBox title="Education">
+          {/* map */}
+          <DateAndLocation />
+          <EducationContent />
+        </ContentBox>
+        <ContentBox title="Experience">
+          {/* map */}
+          <DateAndLocation />
+          <ExperienceContent />
+        </ContentBox>
+        <ContentBox>
+          {/* map */}
+          <ProjectContent title="Projects" />
+        </ContentBox>
+        <ContentBox>
+          <TechnologyContent title="Tech Stacks" />
+        </ContentBox>
+        <ContentBox title="Certificates">
+          <CertificateContent />
+        </ContentBox>
+        <ContentBox title="Languages">
+          <LanguageContent />
+        </ContentBox>
       </main>
     </section>
   );
 }
 
-function Section() {
-  return;
+function ContentBox({ title, children }) {
+  return (
+    <section>
+      <h1 style={{ fontWeight: "bold" }}>{title}</h1>
+      {children}
+    </section>
+  );
+}
+
+function DateAndLocation({ start, end, location = "" }) {
+  return (
+    <div>
+      <p>12/08/2020 - present</p>
+      <p>Bangkok, TH</p>
+    </div>
+  );
+}
+
+function EducationContent({
+  school,
+  degree,
+  major = "",
+  minor = "",
+  gpa = "",
+}) {
+  return (
+    <div>
+      <h2>KU</h2>
+      <p>Bachelors of Economics</p>
+      <ul>
+        <li>Major in Monetary Economics and Public Finance</li>
+        <li>Minor in Business Economics</li>
+        <li>GPA: 3.71/4.00</li>
+      </ul>
+    </div>
+  );
+}
+
+function ExperienceContent({ company, position, description }) {
+  return (
+    <div>
+      <h2>AAM</h2>
+      <h3>Export Sales</h3>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio illum quo
+        doloribus, repudiandae dolor aspernatur non cupiditate at eos, sunt
+        aperiam nam libero cumque dignissimos nostrum totam adipisci dolorem
+        explicabo?
+      </p>
+    </div>
+  );
+}
+
+function ProjectContent() {
+  return (
+    <div>
+      <h2>Todo List</h2>
+      <p>The app are used for listing the tasks.</p>
+    </div>
+  );
+}
+
+function TechnologyContent({ tools }) {
+  return <p>{tools}</p>;
+}
+
+function CertificateContent({ allCertificates }) {
+  return (
+    <ul>
+      {/* map */}
+      <li>
+        <p>The Complete Javascript Course 2023: From Zero to Expert!</p>
+        <p>Online Course taught by Jonas Schemdtmann (2023)</p>
+      </li>
+    </ul>
+  );
+}
+
+function LanguageContent({ allTests }) {
+  return (
+    <ul>
+      {/* map */}
+      <li>Toeic: 781</li>
+    </ul>
+  );
 }
 
 function Footer() {

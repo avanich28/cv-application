@@ -46,31 +46,33 @@ library.add(
 
 export default function App() {
   return (
-    <>
-      <Logo />
-      <main>
+    <div className="app">
+      <header>
+        <Logo />
+      </header>
+      <main className="main">
         <AddInformationSection />
         <CVPage />
       </main>
-      <Footer />
-    </>
+      <footer className="footer">
+        <Footer />
+      </footer>
+    </div>
   );
 }
 
 function Logo() {
   return (
-    <header>
-      <h1>
-        <img src="../public/woman.svg" alt="woman" />{" "}
-        <span>CV Application</span> <img src="../public/man.svg" alt="man" />
-      </h1>
-    </header>
+    <h1 className="logo">
+      <img src="../public/woman.svg" alt="woman" /> <span>CV Application</span>{" "}
+      <img src="../public/man.svg" alt="man" />
+    </h1>
   );
 }
 
 function AddInformationSection() {
   return (
-    <aside>
+    <aside className="information-section">
       <ModeBox />
       <DetailBox />
 
@@ -91,7 +93,7 @@ function AddInformationSection() {
       </InformationBox>
 
       <InformationBox title="Technology" icon={faMicrochip}>
-        <TechnologyLists />
+        <TechnologyForm />
       </InformationBox>
 
       <InformationBox title="Certificate" icon={faCertificate}>
@@ -107,11 +109,11 @@ function AddInformationSection() {
 
 function ModeBox() {
   return (
-    <div className="mode-box">
-      <Button>
+    <div className="mode-box box">
+      <Button className="mode-btn">
         <FontAwesomeIcon icon={faFileLines} /> <span>Content</span>
       </Button>
-      <Button>
+      <Button className="mode-btn">
         <FontAwesomeIcon icon={faPaintbrush} /> <span>Customize</span>
       </Button>
     </div>
@@ -120,21 +122,23 @@ function ModeBox() {
 
 function DetailBox({ onClickClear, onClickDemo }) {
   return (
-    <div className="detail-box">
-      <Button>
-        <FontAwesomeIcon icon={faTrashCan} /> <span>Clear detail</span>
-      </Button>
-      <Button>Demo detail</Button>
-      <SaveButton />
+    <div className="detail-box box">
+      <div>
+        <Button className="detail-btn">
+          <FontAwesomeIcon icon={faTrashCan} /> <span>Clear detail</span>
+        </Button>
+        <Button className="detail-btn">Demo detail</Button>
+      </div>
+      <SavePDFButton />
     </div>
   );
 }
 
-function SaveButton({ onClick }) {
+function SavePDFButton({ onClick }) {
   return (
-    <Button className="save-btn">
+    <Button className="save-pdf-btn small-btn">
       <span>
-        <FontAwesomeIcon icon={faDownload} /> <span>Save</span>
+        <FontAwesomeIcon icon={faDownload} /> <span>PDF</span>
       </span>
     </Button>
   );
@@ -142,12 +146,15 @@ function SaveButton({ onClick }) {
 
 function InformationBox({ title, icon, children }) {
   return (
-    <div>
+    <div className="box">
       <header>
-        <h1>
-          <FontAwesomeIcon icon={icon} /> <span>{title}</span>{" "}
-          <FontAwesomeIcon icon={faChevronDown} />
-        </h1>
+        <Button className="info-btn">
+          <h1>
+            <FontAwesomeIcon icon={icon} />
+            <span>{title}</span>
+            <FontAwesomeIcon icon={faChevronDown} className="chevron" />
+          </h1>
+        </Button>
       </header>
       {children}
     </div>
@@ -170,13 +177,13 @@ function PersonalForm() {
 function EducationLists() {
   return (
     <>
+      <EducationForm />
       <ul>
         {/* map */}
         <List>KU</List>
         {/* hide */}
       </ul>
-      <Button>+ Add</Button>
-      <EducationForm />
+      <AddButton />
     </>
   );
 }
@@ -189,8 +196,8 @@ function EducationForm() {
       <Input>Major</Input>
       <Input>Minor</Input>
       <Input>GPA</Input>
-      <Input>Start Date</Input>
-      <Input>End Date</Input>
+      <InputDate />
+      <Input>Location</Input>
     </Form>
   );
 }
@@ -198,11 +205,11 @@ function EducationForm() {
 function ExperienceLists() {
   return (
     <>
+      <ExperienceForm />
       <ul>
         <List>AAM</List>
       </ul>
-      <Button>+ Add</Button>
-      <ExperienceForm />
+      <AddButton />
     </>
   );
 }
@@ -212,8 +219,8 @@ function ExperienceForm() {
     <Form>
       <Input>Company Name</Input>
       <Input>Position</Input>
-      <Input>Start Date</Input>
-      <Input>End Date</Input>
+      <InputDate />
+      <Input>Location</Input>
       <TextArea>Description</TextArea>
     </Form>
   );
@@ -222,11 +229,11 @@ function ExperienceForm() {
 function ProjectLists() {
   return (
     <>
+      <ProjectForm />
       <ul>
         <List>AAM</List>
       </ul>
-      <Button>+ Add</Button>
-      <ProjectForm />
+      <AddButton />
     </>
   );
 }
@@ -240,34 +247,22 @@ function ProjectForm() {
   );
 }
 
-function TechnologyLists() {
-  return (
-    <>
-      <ul>
-        <List>Stack</List>
-      </ul>
-      <Button>+ Add</Button>
-      <TechnologyForm />
-    </>
-  );
-}
-
 function TechnologyForm() {
   return (
-    <Form>
+    <form>
       <TextArea>Tools</TextArea>
-    </Form>
+    </form>
   );
 }
 
 function CertificateLists() {
   return (
     <>
+      <CertificateForm />
       <ul>
         <List>React</List>
       </ul>
-      <Button>+ Add</Button>
-      <CertificateForm />
+      <AddButton />
     </>
   );
 }
@@ -285,11 +280,11 @@ function CertificateForm() {
 function LanguageLists() {
   return (
     <>
+      <LanguageForm />
       <ul>
         <List>TOEIC</List>
       </ul>
-      <Button>+ Add</Button>
-      <LanguageForm />
+      <AddButton />
     </>
   );
 }
@@ -305,10 +300,10 @@ function LanguageForm() {
 
 function List({ children }) {
   return (
-    <li>
+    <li className="block">
       <Button>{children}</Button>
       <Button>
-        <FontAwesomeIcon icon={faEye} />
+        <FontAwesomeIcon icon={faEye} className="faEye" />
       </Button>
     </li>
   );
@@ -318,34 +313,55 @@ function Form({ children }) {
   return (
     <form>
       {children}
-      <button>
-        <FontAwesomeIcon icon={faTrashCan} /> <span>Delete</span>
-      </button>
-      <button>Cancel</button>
-      <button>Save</button>
+      <span className="form-btn-container">
+        <button className="delete-btn small-btn">
+          <FontAwesomeIcon icon={faTrashCan} /> <span>Delete</span>
+        </button>
+        <button className="cancel-btn small-btn">Cancel</button>
+        <button className="save-btn small-btn">Save</button>
+      </span>
     </form>
   );
 }
 
-function Button({ children }) {
-  return <button>{children}</button>;
+function AddButton() {
+  return (
+    <div className="block">
+      <button className="add-btn">+ Add</button>
+    </div>
+  );
+}
+
+function InputDate() {
+  return (
+    <div className="input-date">
+      <label className="start">Start Date</label>
+      <input type="text" />
+      <label className="end">End Date</label>
+      <input type="text" />
+    </div>
+  );
+}
+
+function Button({ className, children }) {
+  return <button className={className}>{children}</button>;
 }
 
 function Input({ children }) {
   return (
-    <>
+    <div>
       <label>{children}</label>
       <input type="text" />
-    </>
+    </div>
   );
 }
 
 function TextArea({ children }) {
   return (
-    <>
+    <div>
       <label>{children}</label>
       <textarea></textarea>
-    </>
+    </div>
   );
 }
 
@@ -414,8 +430,8 @@ function CVPage({
 
 function ContentBox({ title, children }) {
   return (
-    <section>
-      <h1 style={{ fontWeight: "bold" }}>{title}</h1>
+    <section className="content">
+      <h1>{title}</h1>
       {children}
     </section>
   );
@@ -501,11 +517,11 @@ function LanguageContent({ allTests }) {
 
 function Footer() {
   return (
-    <footer className="footer">
+    <>
       <a href="">
-        <FontAwesomeIcon icon={faGithub} />
+        <FontAwesomeIcon icon={faGithub} className="github" />
       </a>
       <p>&copy; Copyright by avanich28</p>
-    </footer>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
@@ -10,7 +10,6 @@ import {
   faTrashCan,
   faDownload,
   faChevronDown,
-  faChevronUp,
   faGraduationCap,
   faBriefcase,
   faGear,
@@ -31,7 +30,6 @@ library.add(
   faEye,
   faEyeSlash,
   faChevronDown,
-  faChevronUp,
   faGraduationCap,
   faBriefcase,
   faGear,
@@ -45,14 +43,138 @@ library.add(
 );
 
 export default function App() {
+  const [isEdit, setIsEdit] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [tel, setTel] = useState("");
+  const [address, setAddress] = useState("");
+  const [intro, setIntro] = useState("");
+  const fullName = firstName + " " + lastName;
+  const [tech, setTech] = useState("");
+  const [school, setSchool] = useState("");
+  const [degree, setDegree] = useState("");
+  const [major, setMajor] = useState("");
+  const [minor, setMinor] = useState("");
+  const [gpa, setGpa] = useState("");
+  const [startEduc, setStartEduc] = useState("");
+  const [endEduc, setEndEduc] = useState("");
+  const [locationEduc, setLocationEduc] = useState("");
+
+  const [education, setEducation] = useState([]);
+
+  const personalDetail = {
+    fullName,
+    email,
+    tel,
+    address,
+    intro,
+  };
+
+  const educationDetail = {
+    id: education.length,
+    school,
+    degree,
+    major,
+    minor,
+    gpa,
+    startEduc,
+    endEduc,
+    locationEduc,
+    hide: false,
+  };
+
+  console.log(educationDetail);
+
+  function clear(type) {
+    if (type === "school") {
+      setSchool("");
+      setDegree("");
+      setMajor("");
+      setMinor("");
+      setGpa("");
+      setStartEduc("");
+      setEndEduc("");
+      setLocationEduc("");
+    }
+  }
+
+  function handleSaveEducation(e) {
+    e.preventDefault();
+    setEducation((educ) => [...educ, educationDetail]);
+    clear("school");
+  }
+
+  // Can't solve this
+  function handleEdit(index, type) {
+    if (type === "school") {
+      const arr = education.slice();
+      arr[index] = { ...arr[index], ...educationDetail };
+      setEducation(arr);
+    }
+  }
+
+  function toggleHide(index, type, isShow) {
+    if (type === "school") {
+      const arr = education.slice();
+      arr[index].hide = isShow;
+      setEducation(arr);
+    }
+  }
+  console.log(education);
+
   return (
     <div className="app">
       <header>
         <Logo />
       </header>
       <main className="main">
-        <AddInformationSection />
-        <CVPage />
+        <AddInformationSection
+          firstName={firstName}
+          lastName={lastName}
+          email={email}
+          tel={tel}
+          address={address}
+          intro={intro}
+          tech={tech}
+          school={school}
+          degree={degree}
+          major={major}
+          minor={minor}
+          gpa={gpa}
+          startEduc={startEduc}
+          endEduc={endEduc}
+          locationEduc={locationEduc}
+          onFirstName={setFirstName}
+          onLastName={setLastName}
+          onEmail={setEmail}
+          onTel={setTel}
+          onAddress={setAddress}
+          onIntro={setIntro}
+          onTech={setTech}
+          onSchool={setSchool}
+          onDegree={setDegree}
+          onMajor={setMajor}
+          onMinor={setMinor}
+          onGpa={setGpa}
+          onStartEduc={setStartEduc}
+          onEndEduc={setEndEduc}
+          onLocationEduc={setLocationEduc}
+          // array
+          education={education}
+          onEducation={handleSaveEducation}
+          // others
+          onToggleHide={toggleHide}
+          onClear={clear}
+          onEdit={setIsEdit}
+        />
+        <CVPage
+          personalDetail={personalDetail}
+          techDetail={tech}
+          education={education}
+          educationDetail={educationDetail}
+          isEdit={isEdit}
+        />
       </main>
       <footer className="footer">
         <Footer />
@@ -70,38 +192,127 @@ function Logo() {
   );
 }
 
-function AddInformationSection() {
+function AddInformationSection(props) {
+  const [selected, setSelected] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleSelected(index) {
+    if (index === selected) setSelected(null);
+    else setSelected(index);
+  }
+
+  function handleClickList() {
+    setIsOpen(true);
+  }
+
+  function handleAdd() {
+    setIsOpen(true);
+  }
+
+  function handleCancel(e, type) {
+    e.preventDefault();
+    setIsOpen(false);
+    props.onClear(type);
+  }
+
+  function handleSave(e) {
+    e.preventDefault();
+    setIsOpen(false);
+  }
+
   return (
     <aside className="information-section">
       <ModeBox />
       <DetailBox />
 
-      <InformationBox title="Personal Details" icon={faUser}>
-        <PersonalForm />
+      <InformationBox
+        title="Personal Details"
+        icon={faUser}
+        index={0}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        <PersonalForm state={props} />
       </InformationBox>
 
-      <InformationBox title="Education" icon={faGraduationCap}>
-        <EducationLists />
+      <InformationBox
+        title="Education"
+        icon={faGraduationCap}
+        index={1}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        {isOpen && (
+          <EducationForm
+            onCancel={handleCancel}
+            state={props}
+            onSaveData={props.onEducation}
+            onSave={handleSave}
+          />
+        )}
+        <ListBox
+          isOpen={isOpen}
+          onAdd={handleAdd}
+          data={props.education}
+          name="school"
+          onToggleHide={props.onToggleHide}
+          onClickList={handleClickList}
+          onEdit={props.onEdit}
+        />
       </InformationBox>
 
-      <InformationBox title="Experience" icon={faBriefcase}>
-        <ExperienceLists />
+      <InformationBox
+        title="Experience"
+        icon={faBriefcase}
+        index={2}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        {isOpen && <ExperienceForm onCancel={handleCancel} />}
+        <ListBox isOpen={isOpen} onAdd={handleAdd} />
       </InformationBox>
 
-      <InformationBox title="Project" icon={faGear}>
-        <ProjectLists />
+      <InformationBox
+        title="Project"
+        icon={faGear}
+        index={3}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        {isOpen && <ProjectForm onCancel={handleCancel} />}
+        <ListBox isOpen={isOpen} onAdd={handleAdd} />
       </InformationBox>
 
-      <InformationBox title="Technology" icon={faMicrochip}>
-        <TechnologyForm />
+      <InformationBox
+        title="Technology"
+        icon={faMicrochip}
+        index={4}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        <TechnologyForm state={props} />
       </InformationBox>
 
-      <InformationBox title="Certificate" icon={faCertificate}>
-        <CertificateLists />
+      <InformationBox
+        title="Certificate"
+        icon={faCertificate}
+        index={5}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        {isOpen && <CertificateForm onCancel={handleCancel} />}
+        <ListBox isOpen={isOpen} onAdd={handleAdd} />
       </InformationBox>
 
-      <InformationBox title="Language" icon={faLanguage}>
-        <LanguageLists />
+      <InformationBox
+        title="Language"
+        icon={faLanguage}
+        index={6}
+        selected={selected}
+        onSelected={handleSelected}
+      >
+        {isOpen && <LanguageForm onCancel={handleCancel} />}
+        <ListBox isOpen={isOpen} onAdd={handleAdd} />
       </InformationBox>
     </aside>
   );
@@ -144,79 +355,133 @@ function SavePDFButton({ onClick }) {
   );
 }
 
-function InformationBox({ title, icon, children }) {
+function InformationBox({
+  title,
+  icon,
+  index,
+  selected,
+  onSelected,
+  children,
+}) {
+  // Personal and Tech details
+  const normalBox = index === 0 || index === 4;
   return (
     <div className="box">
       <header>
-        <Button className="info-btn">
+        <Button
+          className="info-btn"
+          onClick={() => (!normalBox ? onSelected(index) : "")}
+        >
           <h1>
             <FontAwesomeIcon icon={icon} />
             <span>{title}</span>
-            <FontAwesomeIcon icon={faChevronDown} className="chevron" />
+
+            {!normalBox && (
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={`chevron ${index === selected ? "rotate" : ""}`}
+              />
+            )}
           </h1>
         </Button>
       </header>
-      {children}
+      {normalBox && children}
+      {index === selected && children}
     </div>
   );
 }
 
-function PersonalForm() {
+function ListBox({
+  isOpen,
+  onAdd,
+  data,
+  name,
+  onToggleHide,
+  onClickList,
+  onEdit,
+}) {
+  return (
+    <>
+      {!isOpen && (
+        <>
+          <UnorderedLists
+            data={data}
+            name={name}
+            onToggleHide={onToggleHide}
+            onClickList={onClickList}
+            onEdit={onEdit}
+          />
+          <AddButton onAdd={onAdd} />
+        </>
+      )}
+    </>
+  );
+}
+
+function PersonalForm({ state }) {
   return (
     <form>
-      <Input>First Name</Input>
-      <Input>Last Name</Input>
-      <Input>Email</Input>
-      <Input>Phone Number</Input>
-      <Input>Address</Input>
-      <TextArea>Introduction</TextArea>
+      <Input value={state.firstName} onChange={state.onFirstName}>
+        First Name
+      </Input>
+      <Input value={state.lastName} onChange={state.onLastName}>
+        Last Name
+      </Input>
+      <Input value={state.email} onChange={state.onEmail}>
+        Email
+      </Input>
+      <Input value={state.tel} onChange={state.onTel}>
+        Phone Number
+      </Input>
+      <Input value={state.address} onChange={state.onAddress}>
+        Address
+      </Input>
+      <TextArea value={state.intro} onChange={state.onIntro}>
+        Introduction
+      </TextArea>
     </form>
   );
 }
 
-function EducationLists() {
+function EducationForm({ onCancel, state, onSaveData, onSave }) {
   return (
-    <>
-      <EducationForm />
-      <ul>
-        {/* map */}
-        <List>KU</List>
-        {/* hide */}
-      </ul>
-      <AddButton />
-    </>
-  );
-}
-
-function EducationForm() {
-  return (
-    <Form>
-      <Input>School</Input>
-      <Input>Degree</Input>
-      <Input>Major</Input>
-      <Input>Minor</Input>
-      <Input>GPA</Input>
-      <InputDate />
-      <Input>Location</Input>
+    <Form
+      onCancel={onCancel}
+      onSaveData={onSaveData}
+      onSave={onSave}
+      type="school"
+    >
+      <Input value={state.school} onChange={state.onSchool}>
+        School
+      </Input>
+      <Input value={state.degree} onChange={state.onDegree}>
+        Degree
+      </Input>
+      <Input value={state.major} onChange={state.onMajor}>
+        Major
+      </Input>
+      <Input value={state.minor} onChange={state.onMinor}>
+        Minor
+      </Input>
+      <Input value={state.gpa} onChange={state.onGpa}>
+        GPA
+      </Input>
+      <InputDate
+        value1={state.startEduc}
+        value2={state.endEduc}
+        onChange1={state.onStartEduc}
+        onChange2={state.onEndEduc}
+      />
+      <Input value={state.locationEduc} onChange={state.onLocationEduc}>
+        Location
+      </Input>
     </Form>
   );
 }
 
-function ExperienceLists() {
+function ExperienceForm({ onCancel }) {
   return (
-    <>
-      <ExperienceForm />
-      <ul>
-        <List>AAM</List>
-      </ul>
-      <AddButton />
-    </>
-  );
-}
-
-function ExperienceForm() {
-  return (
-    <Form>
+    <Form onCancel={onCancel}>
       <Input>Company Name</Input>
       <Input>Position</Input>
       <InputDate />
@@ -226,50 +491,28 @@ function ExperienceForm() {
   );
 }
 
-function ProjectLists() {
+function ProjectForm({ onCancel }) {
   return (
-    <>
-      <ProjectForm />
-      <ul>
-        <List>AAM</List>
-      </ul>
-      <AddButton />
-    </>
-  );
-}
-
-function ProjectForm() {
-  return (
-    <Form>
+    <Form onCancel={onCancel}>
       <Input>Project Name</Input>
       <TextArea>Description</TextArea>
     </Form>
   );
 }
 
-function TechnologyForm() {
+function TechnologyForm({ state }) {
   return (
     <form>
-      <TextArea>Tools</TextArea>
+      <TextArea value={state.tech} onChange={state.onTech}>
+        Tools
+      </TextArea>
     </form>
   );
 }
 
-function CertificateLists() {
+function CertificateForm({ onCancel }) {
   return (
-    <>
-      <CertificateForm />
-      <ul>
-        <List>React</List>
-      </ul>
-      <AddButton />
-    </>
-  );
-}
-
-function CertificateForm() {
-  return (
-    <Form>
+    <Form onCancel={onCancel}>
       <Input>Course Name</Input>
       <Input>Year</Input>
       <TextArea>Description</TextArea>
@@ -277,39 +520,61 @@ function CertificateForm() {
   );
 }
 
-function LanguageLists() {
+function LanguageForm({ onCancel }) {
   return (
-    <>
-      <LanguageForm />
-      <ul>
-        <List>TOEIC</List>
-      </ul>
-      <AddButton />
-    </>
-  );
-}
-
-function LanguageForm() {
-  return (
-    <Form>
+    <Form onCancel={onCancel}>
       <Input>Test Name</Input>
       <Input>Scores</Input>
     </Form>
   );
 }
 
-function List({ children }) {
+function UnorderedLists({ data, name, onToggleHide, onClickList, onEdit }) {
+  return (
+    <ul>
+      {/* map */}
+      {data.map((obj) => (
+        <List
+          key={obj.id}
+          id={obj.id}
+          type={name}
+          onToggleHide={onToggleHide}
+          onClickList={onClickList}
+          onEdit={onEdit}
+        >
+          {obj[name]}
+        </List>
+      ))}
+    </ul>
+  );
+}
+
+function List({ children, id, type, onToggleHide, onClickList, onEdit }) {
+  const [isShow, setIsShow] = useState(true);
   return (
     <li className="block">
-      <Button>{children}</Button>
-      <Button>
-        <FontAwesomeIcon icon={faEye} className="faEye" />
+      <Button
+        onClick={() => {
+          onClickList();
+          onEdit((is) => !is);
+        }}
+      >
+        {children}
+      </Button>
+      <Button
+        className="faEye-btn"
+        onClick={() => {
+          onToggleHide(id, type, isShow);
+          setIsShow((is) => !is);
+        }}
+      >
+        <FontAwesomeIcon icon={isShow ? faEye : faEyeSlash} className="faEye" />
       </Button>
     </li>
   );
 }
 
-function Form({ children }) {
+function Form({ children, onCancel, onSave, onSaveData, type }) {
   return (
     <form>
       {children}
@@ -317,110 +582,157 @@ function Form({ children }) {
         <button className="delete-btn small-btn">
           <FontAwesomeIcon icon={faTrashCan} /> <span>Delete</span>
         </button>
-        <button className="cancel-btn small-btn">Cancel</button>
-        <button className="save-btn small-btn">Save</button>
+        <button
+          className="cancel-btn small-btn"
+          onClick={(e) => onCancel(e, type)}
+        >
+          Cancel
+        </button>
+        <button
+          className="save-btn small-btn"
+          onClick={(e) => {
+            onSaveData(e);
+            onSave(e);
+          }}
+        >
+          Save
+        </button>
       </span>
     </form>
   );
 }
 
-function AddButton() {
+function AddButton({ onAdd }) {
   return (
     <div className="block">
-      <button className="add-btn">+ Add</button>
+      <button className="add-btn" onClick={onAdd}>
+        + Add
+      </button>
     </div>
   );
 }
 
-function InputDate() {
+function InputDate({ value1, value2, onChange1, onChange2 }) {
   return (
     <div className="input-date">
       <label className="start">Start Date</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={value1}
+        onChange={(e) => onChange1(e.target.value)}
+      />
       <label className="end">End Date</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={value2}
+        onChange={(e) => onChange2(e.target.value)}
+      />
     </div>
   );
 }
 
-function Button({ className, children }) {
-  return <button className={className}>{children}</button>;
+function Button({ className, children, onClick }) {
+  return (
+    <button className={className} onClick={onClick}>
+      {children}
+    </button>
+  );
 }
 
-function Input({ children }) {
+function Input({ children, value, onChange }) {
   return (
     <div>
       <label>{children}</label>
-      <input type="text" />
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        type="text"
+      />
     </div>
   );
 }
 
-function TextArea({ children }) {
+function TextArea({ children, value, onChange }) {
   return (
     <div>
       <label>{children}</label>
-      <textarea></textarea>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      ></textarea>
     </div>
   );
 }
 
 function CVPage({
-  firstName,
-  lastName,
-  email,
-  tel,
-  address,
-  intro,
-  allEducations,
-  allExperiences,
-  allProjects,
-  tech,
-  allCertificates,
-  allLanguages,
+  personalDetail,
+  techDetail,
+  education,
+  educationDetail,
+  isEdit,
 }) {
   return (
     <section className="cv-page">
       <header>
-        <h1>Arpawan Vanichwattana</h1>
+        <h1>{personalDetail.fullName}</h1>
         <div className="">
           <p>
             <FontAwesomeIcon icon={faEnvelope} />{" "}
-            <span>arpawan.v@gmail.com</span>
+            <span>{personalDetail.email}</span>
           </p>
           <p>
-            <FontAwesomeIcon icon={faPhone} /> <span>+66 092 690 0880</span>
+            <FontAwesomeIcon icon={faPhone} /> <span>{personalDetail.tel}</span>
           </p>
           <p>
             <FontAwesomeIcon icon={faLocationDot} />{" "}
-            <span>SamutPrakarn, Thailand</span>
+            <span>{personalDetail.address}</span>
           </p>
         </div>
       </header>
       <main>
-        <p>Looking forward to work in Fullstack position</p>
+        <p>{personalDetail.intro}</p>
         {/* check && */}
         <ContentBox title="Education">
           {/* map */}
-          <DateAndLocation />
-          <EducationContent />
+          {education.map((educ) => (
+            <Fragment key={educ.id}>
+              <DateAndLocation
+                start={educ.startEduc}
+                end={educ.endEduc}
+                location={educ.locationEduc}
+              />
+              <EducationContent state={educ} />
+            </Fragment>
+          ))}
+          {isEdit === false && (
+            <>
+              <DateAndLocation
+                start={educationDetail.startEduc}
+                end={educationDetail.endEduc}
+                location={educationDetail.locationEduc}
+              />
+              <EducationContent state={educationDetail} />
+            </>
+          )}
         </ContentBox>
         <ContentBox title="Experience">
           {/* map */}
           <DateAndLocation />
           <ExperienceContent />
         </ContentBox>
-        <ContentBox>
+        <ContentBox title="Projects">
           {/* map */}
-          <ProjectContent title="Projects" />
+          <ProjectContent />
         </ContentBox>
-        <ContentBox>
-          <TechnologyContent title="Tech Stacks" />
+        <ContentBox title="Tech Stacks">
+          <TechnologyContent techDetail={techDetail} />
         </ContentBox>
         <ContentBox title="Certificates">
+          {/* map */}
           <CertificateContent />
         </ContentBox>
         <ContentBox title="Languages">
+          {/* map */}
           <LanguageContent />
         </ContentBox>
       </main>
@@ -437,30 +749,26 @@ function ContentBox({ title, children }) {
   );
 }
 
-function DateAndLocation({ start, end, location = "" }) {
+function DateAndLocation({ start, end, location }) {
   return (
     <div>
-      <p>12/08/2020 - present</p>
-      <p>Bangkok, TH</p>
+      <p>
+        {start} - {end}
+      </p>
+      <p>{location}</p>
     </div>
   );
 }
 
-function EducationContent({
-  school,
-  degree,
-  major = "",
-  minor = "",
-  gpa = "",
-}) {
+function EducationContent({ state }) {
   return (
-    <div>
-      <h2>KU</h2>
-      <p>Bachelors of Economics</p>
+    <div className={state.hide ? "hide" : ""}>
+      <h2>{state.school}</h2>
+      <p>{state.degree}</p>
       <ul>
-        <li>Major in Monetary Economics and Public Finance</li>
-        <li>Minor in Business Economics</li>
-        <li>GPA: 3.71/4.00</li>
+        <li>{state.major}</li>
+        <li>{state.minor}</li>
+        <li>{state.gpa}</li>
       </ul>
     </div>
   );
@@ -490,8 +798,8 @@ function ProjectContent() {
   );
 }
 
-function TechnologyContent({ tools }) {
-  return <p>{tools}</p>;
+function TechnologyContent({ techDetail }) {
+  return <p>{techDetail}</p>;
 }
 
 function CertificateContent({ allCertificates }) {

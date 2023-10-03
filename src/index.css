@@ -140,6 +140,17 @@ table {
   --transparent-color: none;
 }
 
+@keyframes moveDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(initial);
+  }
+}
+
 body {
   box-sizing: border-box;
   background-color: var(--white-medium);
@@ -214,6 +225,7 @@ h3 {
 .block {
   margin-top: 8px;
   padding: 0 10px;
+  animation: moveDown 0.5s forwards;
 }
 li.block {
   display: grid;
@@ -278,8 +290,7 @@ button {
   margin-left: auto;
   transition: all 0.3s ease-in-out;
 }
-/* active */
-.chevron:hover {
+.rotate {
   transform: rotate(180deg);
 }
 
@@ -316,8 +327,15 @@ button {
 li > button {
   padding: 13px;
 }
-.faEye {
+.faEye-btn {
   font-size: 20px;
+  color: var(--grey-dark);
+}
+.faEye-btn:hover {
+  color: inherit;
+}
+.hide {
+  display: none;
 }
 
 .add-btn {
@@ -376,9 +394,12 @@ textarea {
 }
 textarea {
   overflow: auto;
+  font-family: inherit;
 }
 
 .cv-page {
+  align-self: start;
+  min-height: 1000px;
   background-color: var(--white-light);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }

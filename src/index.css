@@ -397,7 +397,7 @@ textarea {
   font-family: inherit;
 }
 
-.cv-page {
+.cv-section {
   align-self: start;
   min-height: 1000px;
   background-color: var(--white-light);

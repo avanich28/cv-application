@@ -14,7 +14,7 @@ const personalDefault = {
 };
 
 const educDefault = {
-  id: 0,
+  id: crypto.randomUUID(),
   type: "school",
   isHide: false,
   school: "",
@@ -27,27 +27,80 @@ const educDefault = {
   location: "",
 };
 
+const expDefault = {
+  id: crypto.randomUUID(),
+  type: "company",
+  isHide: false,
+  company: "",
+  position: "",
+  startDate: "",
+  endDate: "",
+  location: "",
+  description: "",
+};
+
+const projectDefault = {
+  id: crypto.randomUUID(),
+  type: "project",
+  isHide: false,
+  project: "",
+  description: "",
+};
+
+const certDefault = {
+  id: crypto.randomUUID(),
+  type: "certificate",
+  isHide: false,
+  certificate: "",
+  year: "",
+  description: "",
+};
+
+const langDefault = {
+  id: crypto.randomUUID(),
+  type: "langTest",
+  isHide: false,
+  langTest: "",
+  scores: "",
+};
+
 const editDefault = {
-  index: null,
+  id: null,
   type: "",
 };
 
 export default function App() {
   const [personal, setPersonal] = useState(personalDefault);
-  const [educations, setEducations] = useState([]);
   const [educ, setEduc] = useState(educDefault);
+  const [exp, setExp] = useState(expDefault);
+  const [project, setProject] = useState(projectDefault);
   const [tech, setTech] = useState("");
+  const [cert, setCert] = useState(certDefault);
+  const [lang, setLang] = useState(langDefault);
+  const [educations, setEducations] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [edit, setEdit] = useState(false);
   const [selectedEdit, setSelectedEdit] = useState(editDefault);
 
   function handleClear() {
     setEdit(false);
     setSelectedEdit(editDefault);
-    setEduc(educDefault);
+    setEduc({ ...educDefault, id: educ.id });
+    setExp({ ...expDefault, id: exp.id });
+    setProject({ ...projectDefault, id: project.id });
+    setCert({ ...certDefault, id: cert.id });
+    setLang({ ...langDefault, id: lang.id });
   }
 
   function handleChangePersonal(e) {
     setPersonal({ ...personal, [e.target.name]: e.target.value });
+  }
+
+  function handleChangeTech(e) {
+    setTech(e.target.value);
   }
 
   function handleChangeEduc(e) {
@@ -57,35 +110,117 @@ export default function App() {
     });
   }
 
-  function handleChangeTech(e) {
-    setTech(e.target.value);
+  function handleChangeExp(e) {
+    setExp({
+      ...exp,
+      [e.target.name]: e.target.value,
+    });
   }
 
-  function handleSaveEduc(e) {
+  function handleChangeProject(e) {
+    setProject({
+      ...project,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  function handleChangeCert(e) {
+    setCert({
+      ...cert,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  function handleChangeLang(e) {
+    setLang({
+      ...lang,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  function getIndex(id, data) {
+    const index = data.findIndex((obj) => obj.id === id);
+    return index;
+  }
+
+  function saveObj(
+    curObj,
+    type,
+    data,
+    setterFuncObj,
+    setterFuncData,
+    defaultObj
+  ) {
+    if (!curObj[type]) alert(`Please enter your ${type} name`);
+    else if (edit) {
+      const arr = data.slice();
+      const index = getIndex(selectedEdit.id, data);
+      arr[index] = curObj;
+      setterFuncData(arr);
+    } else {
+      setterFuncData([...data, curObj]);
+      setterFuncObj({ ...defaultObj, id: crypto.randomUUID() });
+    }
+  }
+
+  function handleSave(e, type) {
     e.preventDefault();
-    setEducations([...educations, educ]);
-    setEduc({ ...educDefault, id: educations.length + 1 });
+    if (type === "school")
+      saveObj(educ, type, educations, setEduc, setEducations, educDefault);
+    if (type === "company")
+      saveObj(exp, type, experiences, setExp, setExperiences, expDefault);
+    if (type === "project")
+      saveObj(project, type, projects, setProject, setProjects, projectDefault);
+    if (type === "certificate")
+      saveObj(cert, type, certificates, setCert, setCertificates, certDefault);
+    if (type === "langTest")
+      saveObj(lang, type, languages, setLang, setLanguages, langDefault);
   }
 
-  function handleHide(index, data, setterFunc) {
+  function deleteObj(id, setterFunc) {
+    if (!edit) return;
+    setterFunc((arr) => arr.filter((obj) => obj.id !== id));
+  }
+
+  function handleDelete(e, id, type) {
+    e.preventDefault();
+    if (type === "school") deleteObj(id, setEducations);
+    if (type === "company") deleteObj(id, setExperiences);
+    if (type === "project") deleteObj(id, setProjects);
+    if (type === "certificate") deleteObj(id, setCertificates);
+    if (type === "langTest") deleteObj(id, setLanguages);
+    handleClear(type);
+  }
+
+  function handleHide(id, data, setterFunc) {
     const arr = data.slice();
+    const index = getIndex(id, data);
     arr[index].isHide = !arr[index].isHide;
     setterFunc(arr);
   }
 
-  function toggleHide(index, type) {
-    if (type === "school") handleHide(index, educations, setEducations);
+  function toggleHide(id, type) {
+    if (type === "school") handleHide(id, educations, setEducations);
+    if (type === "company") handleHide(id, experiences, setExperiences);
+    if (type === "project") handleHide(id, projects, setProjects);
+    if (type === "certificate") handleHide(id, certificates, setCertificates);
+    if (type === "langTest") handleHide(id, languages, setLanguages);
   }
 
-  function setInitialObj(index, data, setterFunc) {
+  function setInitialObj(id, data, setterFunc) {
+    const index = getIndex(id, data);
     const editObj = data[index];
     setterFunc(editObj);
   }
 
-  function handleEdit(index, type) {
+  function handleEdit(id, type) {
     setEdit((edit) => !edit);
-    setSelectedEdit({ index: index, type: type });
-    if (type === "school") setInitialObj(index, educations, setEduc);
+    setSelectedEdit({ id: id, type: type });
+    if (type === "school") setInitialObj(id, educations, setEduc);
+    if (type === "company") setInitialObj(id, experiences, setExp);
+    if (type === "project") setInitialObj(id, projects, setProject);
+    if (type === "certificate") setInitialObj(id, certificates, setCert);
+    if (type === "langTest") setInitialObj(id, languages, setLang);
   }
 
   return (
@@ -97,14 +232,27 @@ export default function App() {
           onToggleHide={toggleHide}
           edit={edit}
           onEdit={handleEdit}
+          onDelete={handleDelete}
+          onSave={handleSave}
           personal={personal}
           onPersonal={handleChangePersonal}
           tech={tech}
           onTech={handleChangeTech}
           educ={educ}
           onEduc={handleChangeEduc}
-          onSaveEduc={handleSaveEduc}
+          exp={exp}
+          onExp={handleChangeExp}
+          project={project}
+          onProject={handleChangeProject}
+          cert={cert}
+          onCert={handleChangeCert}
+          lang={lang}
+          onLang={handleChangeLang}
           educations={educations}
+          experiences={experiences}
+          projects={projects}
+          certificates={certificates}
+          languages={languages}
         />
         <CVSection
           edit={edit}
@@ -113,6 +261,14 @@ export default function App() {
           tech={tech}
           educ={educ}
           educations={educations}
+          exp={exp}
+          experiences={experiences}
+          project={project}
+          projects={projects}
+          cert={cert}
+          certificates={certificates}
+          lang={lang}
+          languages={languages}
         />
       </Main>
       <Footer />
@@ -135,21 +291,7 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-// IMPT Need to clear prop 🥸
-function InformationSection({
-  onClear,
-  onToggleHide,
-  edit,
-  onEdit,
-  personal,
-  onPersonal,
-  tech,
-  onTech,
-  educ,
-  onEduc,
-  onSaveEduc,
-  educations,
-}) {
+function InformationSection(props) {
   const [selected, setSelected] = useState(0);
   const [isAdd, setIsAdd] = useState(false);
 
@@ -166,7 +308,7 @@ function InformationSection({
   function handleClickCancelAndSave(e) {
     e.preventDefault();
     setIsAdd(false);
-    if (edit) onClear();
+    if (props.edit) props.onClear();
   }
 
   const defaultProp = {
@@ -175,27 +317,51 @@ function InformationSection({
     onSelected: handleSelectedTopic,
     onAdd: handleClickAdd,
     onCancel: handleClickCancelAndSave,
-    onToggleHide,
-    onEdit,
+    onToggleHide: props.onToggleHide,
+    onEdit: props.onEdit,
+    onDelete: props.onDelete,
+    onSave: props.onSave,
   };
 
   return (
     <section className="information-section">
       <ModeBox />
       <DetailBox />
-      <PersonalDetailsBox personal={personal} onPersonal={onPersonal} />
-      <EducationBox
-        {...defaultProp}
-        educ={educ}
-        onEduc={onEduc}
-        onSave={onSaveEduc}
-        educations={educations}
+      <PersonalDetailsBox
+        personal={props.personal}
+        onPersonal={props.onPersonal}
       />
-      <ExperienceBox {...defaultProp} />
-      <ProjectBox {...defaultProp} />
-      <TechnologyBox tech={tech} onTech={onTech} />
-      <CertificateBox {...defaultProp} />
-      <LanguageBox {...defaultProp} />
+      <EducationBox
+        defaultProp={defaultProp}
+        educ={props.educ}
+        onEduc={props.onEduc}
+        educations={props.educations}
+      />
+      <ExperienceBox
+        defaultProp={defaultProp}
+        exp={props.exp}
+        onExp={props.onExp}
+        experiences={props.experiences}
+      />
+      <ProjectBox
+        defaultProp={defaultProp}
+        project={props.project}
+        onProject={props.onProject}
+        projects={props.projects}
+      />
+      <TechnologyBox tech={props.tech} onTech={props.onTech} />
+      <CertificateBox
+        defaultProp={defaultProp}
+        cert={props.cert}
+        onCert={props.onCert}
+        certificates={props.certificates}
+      />
+      <LanguageBox
+        defaultProp={defaultProp}
+        lang={props.lang}
+        onLang={props.onLang}
+        languages={props.languages}
+      />
     </section>
   );
 }
@@ -223,12 +389,18 @@ function Topic({ title, icon, dataIndex, selected = "", onSelected = "" }) {
   );
 }
 
-function FormLayout({ children, onCancel, onSave }) {
+function FormLayout({ children, onDelete, onCancel, onSave, id, type }) {
   return (
     <form>
       {children}
       <span className="form-btn-container">
-        <button className="delete-btn small-btn">
+        <button
+          className="delete-btn small-btn"
+          onClick={(e) => {
+            onCancel(e);
+            onDelete(e, id, type);
+          }}
+        >
           <FontAwesomeIcon icon={["fas", "trash-can"]} /> <span>Delete</span>
         </button>
         <button className="cancel-btn small-btn" onClick={onCancel}>
@@ -238,7 +410,7 @@ function FormLayout({ children, onCancel, onSave }) {
           className="save-btn small-btn"
           onClick={(e) => {
             onCancel(e);
-            onSave(e);
+            onSave(e, type);
           }}
         >
           Save
@@ -248,23 +420,21 @@ function FormLayout({ children, onCancel, onSave }) {
   );
 }
 
-// Receive data array ex. educations []
-// NOTE get rid of ?.
 function DetailTitleLists({ onAdd, data, onToggleHide, onEdit }) {
-  console.log(data);
   return (
     <>
       <ul>
-        {/* map */}
-        {data?.length > 0 &&
+        {data.length > 0 &&
           data.map((obj) => (
             <DetailTitle
               key={obj.id}
-              index={obj.id}
+              id={obj.id}
               type={obj.type}
+              isHide={obj.isHide}
               onToggleHide={onToggleHide}
               onEdit={onEdit}
-              onAdd={onAdd} // open form
+              // NOTE Open form when click edit
+              onAdd={onAdd}
             >
               {obj[obj.type]}
             </DetailTitle>
@@ -280,25 +450,26 @@ function DetailTitleLists({ onAdd, data, onToggleHide, onEdit }) {
   );
 }
 
-function DetailTitle({ children, index, type, onToggleHide, onEdit, onAdd }) {
-  const [isHide, setIsHide] = useState(false);
+function DetailTitle({
+  children,
+  id,
+  type,
+  isHide,
+  onToggleHide,
+  onEdit,
+  onAdd,
+}) {
   return (
     <li className="block">
       <button
         onClick={() => {
-          onEdit(index, type);
+          onEdit(id, type);
           onAdd();
         }}
       >
         {children || "Detail Title Demo"}
       </button>
-      <button
-        className="faEye-btn"
-        onClick={() => {
-          setIsHide((is) => !is);
-          onToggleHide(index, type);
-        }}
-      >
+      <button className="faEye-btn" onClick={() => onToggleHide(id, type)}>
         <FontAwesomeIcon icon={["far", isHide ? "eye-slash" : "eye"]} />
       </button>
     </li>
@@ -314,7 +485,6 @@ function PersonalDetailsBox({ personal, onPersonal }) {
   );
 }
 
-// value + onChange + onSubmit?
 function PersonalDetailsForm({ personal, onPersonal }) {
   return (
     <form>
@@ -340,52 +510,47 @@ function PersonalDetailsForm({ personal, onPersonal }) {
   );
 }
 
-function EducationBox({
-  onToggleHide,
-  onEdit,
-  selected,
-  isAdd,
-  onSelected,
-  onAdd,
-  onCancel,
-  educ,
-  onEduc,
-  onSave,
-  educations,
-}) {
+function EducationBox({ defaultProp, educ, onEduc, educations }) {
   return (
     <div className="box">
       <Topic
         title="education"
         icon="graduation-cap"
         dataIndex={1}
-        selected={selected}
-        onSelected={onSelected}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
       />
 
-      {isAdd && selected === 1 && (
+      {defaultProp.isAdd && defaultProp.selected === 1 && (
         <EducationForm
-          onCancel={onCancel}
+          onDelete={defaultProp.onDelete}
+          onCancel={defaultProp.onCancel}
+          onSave={defaultProp.onSave}
           educ={educ}
           onEduc={onEduc}
-          onSave={onSave}
         />
       )}
-      {!isAdd && selected === 1 && (
+      {!defaultProp.isAdd && defaultProp.selected === 1 && (
         <DetailTitleLists
-          onAdd={onAdd}
           data={educations}
-          onToggleHide={onToggleHide}
-          onEdit={onEdit}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
         />
       )}
     </div>
   );
 }
 
-function EducationForm({ onCancel, educ, onEduc, onSave }) {
+function EducationForm({ onDelete, onCancel, onSave, educ, onEduc }) {
   return (
-    <FormLayout onCancel={onCancel} onSave={onSave}>
+    <FormLayout
+      onDelete={onDelete}
+      onCancel={onCancel}
+      onSave={onSave}
+      id={educ.id}
+      type={educ.type}
+    >
       <Input name="school" value={educ.school} onChange={onEduc}>
         School
       </Input>
@@ -416,58 +581,120 @@ function EducationForm({ onCancel, educ, onEduc, onSave }) {
   );
 }
 
-function ExperienceBox({ selected, isAdd, onSelected, onAdd, onCancel }) {
+function ExperienceBox({ defaultProp, exp, onExp, experiences }) {
   return (
     <div className="box">
       <Topic
         title="experience"
         icon="briefcase"
         dataIndex={2}
-        selected={selected}
-        onSelected={onSelected}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
       />
-      {isAdd && selected === 2 && <ExperienceForm onCancel={onCancel} />}
-      {!isAdd && selected === 2 && <DetailTitleLists onAdd={onAdd} />}
+      {defaultProp.isAdd && defaultProp.selected === 2 && (
+        <ExperienceForm
+          onDelete={defaultProp.onDelete}
+          onCancel={defaultProp.onCancel}
+          onSave={defaultProp.onSave}
+          exp={exp}
+          onExp={onExp}
+        />
+      )}
+      {!defaultProp.isAdd && defaultProp.selected === 2 && (
+        <DetailTitleLists
+          data={experiences}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
+        />
+      )}
     </div>
   );
 }
 
-function ExperienceForm({ onCancel }) {
+function ExperienceForm({ onDelete, onCancel, onSave, exp, onExp }) {
   return (
-    <FormLayout onCancel={onCancel}>
-      <Input>Company Name</Input>
-      <Input>Position</Input>
+    <FormLayout
+      onDelete={onDelete}
+      onCancel={onCancel}
+      onSave={onSave}
+      id={exp.id}
+      type={exp.type}
+    >
+      <Input name="company" value={exp.company} onChange={onExp}>
+        Company Name
+      </Input>
+      <Input name="position" value={exp.position} onChange={onExp}>
+        Position
+      </Input>
       <div className="input-date">
-        <Input>Start Date</Input>
-        <Input>End Date</Input>
+        <Input name="startDate" value={exp.startDate} onChange={onExp}>
+          Start Date
+        </Input>
+        <Input name="endDate" value={exp.endDate} onChange={onExp}>
+          End Date
+        </Input>
       </div>
-      <Input>Location</Input>
-      <TextArea>Description</TextArea>
+      <Input name="location" value={exp.location} onChange={onExp}>
+        Location
+      </Input>
+      <TextArea name="description" value={exp.description} onChange={onExp}>
+        Description
+      </TextArea>
     </FormLayout>
   );
 }
 
-function ProjectBox({ selected, isAdd, onSelected, onAdd, onCancel }) {
+function ProjectBox({ defaultProp, project, onProject, projects }) {
   return (
     <div className="box">
       <Topic
         title="project"
         icon="gear"
         dataIndex={3}
-        selected={selected}
-        onSelected={onSelected}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
       />
-      {isAdd && selected === 3 && <ProjectForm onCancel={onCancel} />}
-      {!isAdd && selected === 3 && <DetailTitleLists onAdd={onAdd} />}
+      {defaultProp.isAdd && defaultProp.selected === 3 && (
+        <ProjectForm
+          onDelete={defaultProp.onDelete}
+          onCancel={defaultProp.onCancel}
+          onSave={defaultProp.onSave}
+          project={project}
+          onProject={onProject}
+        />
+      )}
+      {!defaultProp.isAdd && defaultProp.selected === 3 && (
+        <DetailTitleLists
+          data={projects}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
+        />
+      )}
     </div>
   );
 }
 
-function ProjectForm({ onCancel }) {
+function ProjectForm({ onDelete, onCancel, onSave, project, onProject }) {
   return (
-    <FormLayout onCancel={onCancel}>
-      <Input>Project Name</Input>
-      <TextArea>Description</TextArea>
+    <FormLayout
+      onDelete={onDelete}
+      onCancel={onCancel}
+      onSave={onSave}
+      id={project.id}
+      type={project.type}
+    >
+      <Input name="project" value={project.project} onChange={onProject}>
+        Project Name
+      </Input>
+      <TextArea
+        name="description"
+        value={project.description}
+        onChange={onProject}
+      >
+        Description
+      </TextArea>
     </FormLayout>
   );
 }
@@ -491,53 +718,105 @@ function TechnologyForm({ tech, onTech }) {
   );
 }
 
-function CertificateBox({ selected, isAdd, onSelected, onAdd, onCancel }) {
+function CertificateBox({ defaultProp, cert, onCert, certificates }) {
   return (
     <div className="box">
       <Topic
         title="certificate"
         icon="certificate"
         dataIndex={5}
-        selected={selected}
-        onSelected={onSelected}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
       />
-      {isAdd && selected === 5 && <CertificateForm onCancel={onCancel} />}
-      {!isAdd && selected === 5 && <DetailTitleLists onAdd={onAdd} />}
+      {defaultProp.isAdd && defaultProp.selected === 5 && (
+        <CertificateForm
+          onDelete={defaultProp.onDelete}
+          onCancel={defaultProp.onCancel}
+          onSave={defaultProp.onSave}
+          cert={cert}
+          onCert={onCert}
+        />
+      )}
+      {!defaultProp.isAdd && defaultProp.selected === 5 && (
+        <DetailTitleLists
+          data={certificates}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
+        />
+      )}
     </div>
   );
 }
 
-function CertificateForm({ onCancel }) {
+function CertificateForm({ onDelete, onCancel, onSave, cert, onCert }) {
   return (
-    <FormLayout onCancel={onCancel}>
-      <Input>Course Name</Input>
-      <Input>Year</Input>
-      <TextArea>Description</TextArea>
+    <FormLayout
+      onDelete={onDelete}
+      onCancel={onCancel}
+      onSave={onSave}
+      id={cert.id}
+      type={cert.type}
+    >
+      <Input name="certificate" value={cert.certificate} onChange={onCert}>
+        Certificate Name
+      </Input>
+      <Input name="year" value={cert.year} onChange={onCert}>
+        Year
+      </Input>
+      <TextArea name="description" value={cert.description} onChange={onCert}>
+        Description
+      </TextArea>
     </FormLayout>
   );
 }
 
-function LanguageBox({ selected, isAdd, onSelected, onAdd, onCancel }) {
+function LanguageBox({ defaultProp, lang, onLang, languages }) {
   return (
     <div className="box">
       <Topic
         title="language"
         icon="language"
         dataIndex={6}
-        selected={selected}
-        onSelected={onSelected}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
       />
-      {isAdd && selected === 6 && <LanguageForm onCancel={onCancel} />}
-      {!isAdd && selected === 6 && <DetailTitleLists onAdd={onAdd} />}
+      {defaultProp.isAdd && defaultProp.selected === 6 && (
+        <LanguageForm
+          onDelete={defaultProp.onDelete}
+          onCancel={defaultProp.onCancel}
+          onSave={defaultProp.onSave}
+          lang={lang}
+          onLang={onLang}
+        />
+      )}
+      {!defaultProp.isAdd && defaultProp.selected === 6 && (
+        <DetailTitleLists
+          data={languages}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
+        />
+      )}
     </div>
   );
 }
 
-function LanguageForm({ onCancel }) {
+function LanguageForm({ onDelete, onCancel, onSave, lang, onLang }) {
   return (
-    <FormLayout onCancel={onCancel}>
-      <Input>Test Name</Input>
-      <Input>Scores</Input>
+    <FormLayout
+      onDelete={onDelete}
+      onCancel={onCancel}
+      onSave={onSave}
+      id={lang.id}
+      type={lang.type}
+    >
+      <Input name="langTest" value={lang.langTest} onChange={onLang}>
+        Language Test
+      </Input>
+      <Input name="scores" value={lang.scores} onChange={onLang}>
+        Scores
+      </Input>
     </FormLayout>
   );
 }
@@ -600,11 +879,27 @@ function SavePDFButton({ onClick }) {
 
 //////////////////////////////////////////
 
-function CVSection({ edit, selectedEdit, personal, tech, educ, educations }) {
+function CVSection({
+  edit,
+  selectedEdit,
+  personal,
+  tech,
+  educ,
+  educations,
+  exp,
+  experiences,
+  project,
+  projects,
+  cert,
+  certificates,
+  lang,
+  languages,
+}) {
   const defaultProp = {
     edit,
     selectedEdit,
   };
+
   return (
     <section className="cv-section">
       <HeadContent personal={personal} />
@@ -614,10 +909,27 @@ function CVSection({ edit, selectedEdit, personal, tech, educ, educations }) {
           educ={educ}
           educations={educations}
         />
-        <ExperienceDetailLists {...defaultProp} />
-        <ProjectDetailLists {...defaultProp} />
+        <ExperienceDetailLists
+          {...defaultProp}
+          exp={exp}
+          experiences={experiences}
+        />
+        <ProjectDetailLists
+          {...defaultProp}
+          project={project}
+          projects={projects}
+        />
         <TechnologyDetail tech={tech} />
-        <LanguageDetailLists {...defaultProp} />
+        <CertificateDetailLists
+          {...defaultProp}
+          cert={cert}
+          certificates={certificates}
+        />
+        <LanguageDetailLists
+          {...defaultProp}
+          lang={lang}
+          languages={languages}
+        />
       </MainContent>
     </section>
   );
@@ -666,7 +978,11 @@ function DetailLayout({ title, children }) {
 function DateAndLocation({ startDate, endDate, location }) {
   return (
     <div className="date-location">
-      <p>{startDate + " - " + endDate}</p>
+      <p>
+        {startDate}
+        {startDate && endDate ? " - " : ""}
+        {endDate}
+      </p>
       <p>{location}</p>
     </div>
   );
@@ -676,10 +992,9 @@ function EducationDetailLists({ educ, educations, edit, selectedEdit }) {
   return (
     <DetailLayout title="education">
       <ul>
-        {/* map */}
         {educations.length > 0 &&
           educations.map((obj) =>
-            selectedEdit.index === obj.id && obj.type === selectedEdit.type ? (
+            selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
               <EducationDetail key={obj.id} {...educ} />
             ) : (
               <EducationDetail key={obj.id} {...obj} />
@@ -692,6 +1007,7 @@ function EducationDetailLists({ educ, educations, edit, selectedEdit }) {
 }
 
 function EducationDetail({
+  isHide,
   school,
   degree,
   major,
@@ -700,7 +1016,6 @@ function EducationDetail({
   startDate,
   endDate,
   location,
-  isHide,
 }) {
   return (
     <li className={isHide ? "hide" : ""}>
@@ -720,48 +1035,70 @@ function EducationDetail({
   );
 }
 
-function ExperienceDetailLists() {
+function ExperienceDetailLists({ exp, experiences, edit, selectedEdit }) {
   return (
     <DetailLayout title="experience">
       <ul>
-        {/* map */}
-        <ExperienceDetail />
+        {experiences.length > 0 &&
+          experiences.map((obj) =>
+            selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
+              <ExperienceDetail key={obj.id} {...exp} />
+            ) : (
+              <ExperienceDetail key={obj.id} {...obj} />
+            )
+          )}
+        {edit === false && <ExperienceDetail {...exp} />}
       </ul>
     </DetailLayout>
   );
 }
 
-function ExperienceDetail() {
+function ExperienceDetail({
+  isHide,
+  company,
+  position,
+  startDate,
+  endDate,
+  location,
+  description,
+}) {
   return (
-    <li>
-      <h2>AAM</h2>
-      <h3>Export Sales</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio illum quo
-        doloribus, repudiandae dolor aspernatur non cupiditate at eos, sunt
-        aperiam nam libero cumque dignissimos nostrum totam adipisci dolorem
-        explicabo?
-      </p>
+    <li className={isHide ? "hide" : ""}>
+      <DateAndLocation
+        startDate={startDate}
+        endDate={endDate}
+        location={location}
+      />
+      <h2>{company}</h2>
+      <h3>{position}</h3>
+      <p>{description}</p>
     </li>
   );
 }
 
-function ProjectDetailLists() {
+function ProjectDetailLists({ project, projects, edit, selectedEdit }) {
   return (
     <DetailLayout title="project">
       <ul>
-        {/* map */}
-        <ProjectDetail />
+        {projects.length > 0 &&
+          projects.map((obj) =>
+            selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
+              <ProjectDetail key={obj.id} {...project} />
+            ) : (
+              <ProjectDetail key={obj.id} {...obj} />
+            )
+          )}
+        {edit === false && <ProjectDetail {...project} />}
       </ul>
     </DetailLayout>
   );
 }
 
-function ProjectDetail() {
+function ProjectDetail({ isHide, project, description }) {
   return (
-    <li>
-      <h2>Todo List</h2>
-      <p>The app are used for listing the tasks.</p>
+    <li className={isHide ? "hide" : ""}>
+      <h2>{project}</h2>
+      <p>{description}</p>
     </li>
   );
 }
@@ -774,39 +1111,59 @@ function TechnologyDetail({ tech }) {
   );
 }
 
-function CertificateDetailLists() {
+function CertificateDetailLists({ cert, certificates, edit, selectedEdit }) {
   return (
     <DetailLayout title="certificate">
       <ul>
-        {/* map */}
-        <CertificateDetail />
+        {certificates.length > 0 &&
+          certificates.map((obj) =>
+            selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
+              <CertificateDetail key={obj.id} {...cert} />
+            ) : (
+              <CertificateDetail key={obj.id} {...obj} />
+            )
+          )}
+        {edit === false && <CertificateDetail {...cert} />}
       </ul>
     </DetailLayout>
   );
 }
 
-function CertificateDetail() {
+function CertificateDetail({ isHide, certificate, year, description }) {
   return (
-    <li>
-      <p>The Complete Javascript Course 2023: From Zero to Expert!</p>
-      <p>Online Course taught by Jonas Schemdtmann (2023)</p>
+    <li className={isHide ? "hide" : ""}>
+      <p>{certificate}</p>
+      <p>{description}</p>
+      <span>{year && `(${year})`}</span>
     </li>
   );
 }
 
-function LanguageDetailLists() {
+function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
   return (
     <DetailLayout title="language">
       <ul>
-        {/* map */}
-        <LanguageDetail />
+        {languages.length > 0 &&
+          languages.map((obj) =>
+            selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
+              <LanguageDetail key={obj.id} {...lang} />
+            ) : (
+              <LanguageDetail key={obj.id} {...obj} />
+            )
+          )}
+        {edit === false && <LanguageDetail {...lang} />}
       </ul>
     </DetailLayout>
   );
 }
 
-function LanguageDetail() {
-  return <li>Toeic: 781</li>;
+function LanguageDetail({ isHide, langTest, scores }) {
+  return (
+    <li className={isHide ? "hide" : ""}>
+      <span>{langTest}</span>
+      <span>{scores}</span>
+    </li>
+  );
 }
 
 function Footer() {

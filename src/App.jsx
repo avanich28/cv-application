@@ -69,6 +69,12 @@ const editDefault = {
   type: "",
 };
 
+const defaultCustomize = {
+  color: "black",
+  layout: "top",
+  font: "serif",
+};
+
 export default function App() {
   const [personal, setPersonal] = useState(personalDefault);
   const [educ, setEduc] = useState(educDefault);
@@ -84,6 +90,7 @@ export default function App() {
   const [languages, setLanguages] = useState([]);
   const [edit, setEdit] = useState(false);
   const [selectedEdit, setSelectedEdit] = useState(editDefault);
+  const [customize, setCustomize] = useState(defaultCustomize);
 
   function handleClear() {
     setEdit(false);
@@ -223,6 +230,10 @@ export default function App() {
     if (type === "langTest") setInitialObj(id, languages, setLang);
   }
 
+  function handleCustomize(name, value) {
+    setCustomize({ ...customize, [name]: value });
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -234,6 +245,8 @@ export default function App() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onSave={handleSave}
+          customize={customize}
+          onCustomize={handleCustomize}
           personal={personal}
           onPersonal={handleChangePersonal}
           tech={tech}
@@ -269,6 +282,7 @@ export default function App() {
           certificates={certificates}
           lang={lang}
           languages={languages}
+          customize={customize}
         />
       </Main>
       <Footer />
@@ -292,6 +306,7 @@ function Main({ children }) {
 }
 
 function InformationSection(props) {
+  const [mode, setMode] = useState("content");
   const [selected, setSelected] = useState(0);
   const [isAdd, setIsAdd] = useState(false);
 
@@ -325,47 +340,113 @@ function InformationSection(props) {
 
   return (
     <section className="information-section">
-      <ModeBox />
+      <ModeBox mode={mode} onMode={setMode} />
       <DetailBox />
-      <PersonalDetailsBox
-        personal={props.personal}
-        onPersonal={props.onPersonal}
-      />
+      {mode === "content" && (
+        <>
+          <PersonalDetailsBox
+            personal={props.personal}
+            onPersonal={props.onPersonal}
+          />
 
-      <EducationBox
-        defaultProp={defaultProp}
-        educ={props.educ}
-        onEduc={props.onEduc}
-        educations={props.educations}
-      />
-      <ExperienceBox
-        defaultProp={defaultProp}
-        exp={props.exp}
-        onExp={props.onExp}
-        experiences={props.experiences}
-      />
-      <ProjectBox
-        defaultProp={defaultProp}
-        project={props.project}
-        onProject={props.onProject}
-        projects={props.projects}
-      />
-      <TechnologyBox tech={props.tech} onTech={props.onTech} />
-      <CertificateBox
-        defaultProp={defaultProp}
-        cert={props.cert}
-        onCert={props.onCert}
-        certificates={props.certificates}
-      />
-      <LanguageBox
-        defaultProp={defaultProp}
-        lang={props.lang}
-        onLang={props.onLang}
-        languages={props.languages}
-      />
+          <EducationBox
+            defaultProp={defaultProp}
+            educ={props.educ}
+            onEduc={props.onEduc}
+            educations={props.educations}
+          />
+          <ExperienceBox
+            defaultProp={defaultProp}
+            exp={props.exp}
+            onExp={props.onExp}
+            experiences={props.experiences}
+          />
+          <ProjectBox
+            defaultProp={defaultProp}
+            project={props.project}
+            onProject={props.onProject}
+            projects={props.projects}
+          />
+          <TechnologyBox tech={props.tech} onTech={props.onTech} />
+          <CertificateBox
+            defaultProp={defaultProp}
+            cert={props.cert}
+            onCert={props.onCert}
+            certificates={props.certificates}
+          />
+          <LanguageBox
+            defaultProp={defaultProp}
+            lang={props.lang}
+            onLang={props.onLang}
+            languages={props.languages}
+          />
+        </>
+      )}
+
+      {mode === "customize" && (
+        <>
+          <Color customize={props.customize} onCustomize={props.onCustomize} />
+          <LayoutLists
+            customize={props.customize}
+            onCustomize={props.onCustomize}
+          />
+          <FontLists
+            customize={props.customize}
+            onCustomize={props.onCustomize}
+          />
+        </>
+      )}
     </section>
   );
 }
+
+function ModeBox({ mode, onMode }) {
+  return (
+    <div className="mode-box box">
+      <button
+        className={`mode-btn ${mode === "content" && "active-mode"}`}
+        onClick={() => onMode("content")}
+      >
+        <FontAwesomeIcon icon={["fas", "file-lines"]} /> <span>Content</span>
+      </button>
+      <button
+        className={`mode-btn ${mode === "customize" && "active-mode"}`}
+        onClick={() => onMode("customize")}
+      >
+        <FontAwesomeIcon icon={["fas", "paint-brush"]} /> <span>Customize</span>
+      </button>
+    </div>
+  );
+}
+
+//////////////////////////////
+
+function DetailBox({ onClickClear, onClickDemo }) {
+  return (
+    <div className="detail-box box">
+      <div>
+        <button className="detail-btn">
+          <FontAwesomeIcon icon={["fas", "trash-can"]} />{" "}
+          <span>Clear detail</span>
+        </button>
+        <button className="detail-btn">Demo detail</button>
+      </div>
+      <SavePDFButton />
+    </div>
+  );
+}
+
+function SavePDFButton({ onClick }) {
+  return (
+    <button className="save-pdf-btn small-btn">
+      <span>
+        <FontAwesomeIcon icon={["fas", "download"]} /> <span>PDF</span>
+      </span>
+    </button>
+  );
+}
+
+///////////////////////////////
 
 function BoxInput({ title, icon, dataIndex, data, defaultProp, children }) {
   return (
@@ -812,41 +893,97 @@ function TextArea({ children, name, value, onChange }) {
   );
 }
 
-function ModeBox() {
+//////////////////////////////////////////
+
+function CustomizeBox({ title, className, children }) {
   return (
-    <div className="mode-box box">
-      <button className="mode-btn">
-        <FontAwesomeIcon icon={["fas", "file-lines"]} /> <span>Content</span>
-      </button>
-      <button className="mode-btn">
-        <FontAwesomeIcon icon={["fas", "paint-brush"]} /> <span>Customize</span>
-      </button>
+    <div className="customize-box">
+      <h1>{title}</h1>
+      <ul className={className}>{children}</ul>
     </div>
   );
 }
 
-function DetailBox({ onClickClear, onClickDemo }) {
+function Color({ customize, onCustomize }) {
   return (
-    <div className="detail-box box">
-      <div>
-        <button className="detail-btn">
-          <FontAwesomeIcon icon={["fas", "trash-can"]} />{" "}
-          <span>Clear detail</span>
-        </button>
-        <button className="detail-btn">Demo detail</button>
-      </div>
-      <SavePDFButton />
-    </div>
+    <CustomizeBox title="color" className="color">
+      <li>
+        <input
+          name="color"
+          type="color"
+          value={customize.color}
+          onChange={(e) => onCustomize(e.target.name, e.target.value)}
+        />
+      </li>
+    </CustomizeBox>
   );
 }
 
-function SavePDFButton({ onClick }) {
+function LayoutLists({ customize, onCustomize }) {
   return (
-    <button className="save-pdf-btn small-btn">
-      <span>
-        <FontAwesomeIcon icon={["fas", "download"]} /> <span>PDF</span>
-      </span>
-    </button>
+    <CustomizeBox title="layout" className="layout">
+      {["top", "left", "right"].map((pos, i) => (
+        <Layout
+          key={i}
+          pos={pos}
+          color={customize.color}
+          onCustomize={onCustomize}
+          isSelected={pos === customize.layout}
+        />
+      ))}
+    </CustomizeBox>
+  );
+}
+
+function Layout({ pos, color, onCustomize, isSelected }) {
+  return (
+    <li>
+      <button
+        className={`layout-btn ${isSelected && "active-layout"}`}
+        onClick={() => onCustomize("layout", pos)}
+      >
+        <div className={`layout-stripe ${pos}`}>
+          <div className="stripe-1" style={{ backgroundColor: color }}></div>
+          <div className="stripe-2"></div>
+        </div>
+        <p>{pos}</p>
+      </button>
+    </li>
+  );
+}
+
+function FontLists({ customize, onCustomize }) {
+  return (
+    <CustomizeBox title="font" className="font">
+      {[
+        ["serif", "serif"],
+        ["sans-serif", "sans"],
+        ["monospace", "mono"],
+      ].map((font, i) => (
+        <Font
+          key={i}
+          font={font[0]}
+          abbreviation={font[1]}
+          onCustomize={onCustomize}
+          isSelected={font[0] === customize.font}
+        />
+      ))}
+    </CustomizeBox>
+  );
+}
+
+function Font({ font, abbreviation, onCustomize, isSelected }) {
+  return (
+    <li>
+      <button
+        className={`font-btn ${isSelected && "active-font"}`}
+        style={{ fontFamily: font }}
+        onClick={() => onCustomize("font", font)}
+      >
+        <p>Aa</p>
+        <p>{abbreviation}</p>
+      </button>
+    </li>
   );
 }
 
@@ -867,6 +1004,7 @@ function CVSection({
   certificates,
   lang,
   languages,
+  customize,
 }) {
   const defaultProp = {
     edit,

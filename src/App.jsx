@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as icons from "./icon.jsx";
@@ -296,7 +296,7 @@ function InformationSection(props) {
   const [isAdd, setIsAdd] = useState(false);
 
   function handleSelectedTopic(dataIndex) {
-    if (dataIndex === selected) setSelected(null);
+    if (dataIndex === selected) setSelected(0);
     else setSelected(dataIndex);
     setIsAdd(false);
   }
@@ -331,6 +331,7 @@ function InformationSection(props) {
         personal={props.personal}
         onPersonal={props.onPersonal}
       />
+
       <EducationBox
         defaultProp={defaultProp}
         educ={props.educ}
@@ -363,6 +364,30 @@ function InformationSection(props) {
         languages={props.languages}
       />
     </section>
+  );
+}
+
+function BoxInput({ title, icon, dataIndex, data, defaultProp, children }) {
+  return (
+    <div className="box">
+      <Topic
+        title={title}
+        icon={icon}
+        dataIndex={dataIndex}
+        selected={defaultProp.selected}
+        onSelected={defaultProp.onSelected}
+      />
+
+      {defaultProp.isAdd && defaultProp.selected === dataIndex && children}
+      {!defaultProp.isAdd && defaultProp.selected === dataIndex && (
+        <DetailTitleLists
+          data={data}
+          onAdd={defaultProp.onAdd}
+          onToggleHide={defaultProp.onToggleHide}
+          onEdit={defaultProp.onEdit}
+        />
+      )}
+    </div>
   );
 }
 
@@ -460,19 +485,23 @@ function DetailTitle({
   onAdd,
 }) {
   return (
-    <li className="block">
-      <button
-        onClick={() => {
-          onEdit(id, type);
-          onAdd();
-        }}
-      >
-        {children || "Detail Title Demo"}
-      </button>
-      <button className="faEye-btn" onClick={() => onToggleHide(id, type)}>
-        <FontAwesomeIcon icon={["far", isHide ? "eye-slash" : "eye"]} />
-      </button>
-    </li>
+    <>
+      {children && (
+        <li className="block">
+          <button
+            onClick={() => {
+              onEdit(id, type);
+              onAdd();
+            }}
+          >
+            {children}
+          </button>
+          <button className="faEye-btn" onClick={() => onToggleHide(id, type)}>
+            <FontAwesomeIcon icon={["far", isHide ? "eye-slash" : "eye"]} />
+          </button>
+        </li>
+      )}
+    </>
   );
 }
 
@@ -512,33 +541,21 @@ function PersonalDetailsForm({ personal, onPersonal }) {
 
 function EducationBox({ defaultProp, educ, onEduc, educations }) {
   return (
-    <div className="box">
-      <Topic
-        title="education"
-        icon="graduation-cap"
-        dataIndex={1}
-        selected={defaultProp.selected}
-        onSelected={defaultProp.onSelected}
+    <BoxInput
+      title="education"
+      icon="graduation-cap"
+      dataIndex={1}
+      defaultProp={defaultProp}
+      data={educations}
+    >
+      <EducationForm
+        onDelete={defaultProp.onDelete}
+        onCancel={defaultProp.onCancel}
+        onSave={defaultProp.onSave}
+        educ={educ}
+        onEduc={onEduc}
       />
-
-      {defaultProp.isAdd && defaultProp.selected === 1 && (
-        <EducationForm
-          onDelete={defaultProp.onDelete}
-          onCancel={defaultProp.onCancel}
-          onSave={defaultProp.onSave}
-          educ={educ}
-          onEduc={onEduc}
-        />
-      )}
-      {!defaultProp.isAdd && defaultProp.selected === 1 && (
-        <DetailTitleLists
-          data={educations}
-          onAdd={defaultProp.onAdd}
-          onToggleHide={defaultProp.onToggleHide}
-          onEdit={defaultProp.onEdit}
-        />
-      )}
-    </div>
+    </BoxInput>
   );
 }
 
@@ -583,32 +600,21 @@ function EducationForm({ onDelete, onCancel, onSave, educ, onEduc }) {
 
 function ExperienceBox({ defaultProp, exp, onExp, experiences }) {
   return (
-    <div className="box">
-      <Topic
-        title="experience"
-        icon="briefcase"
-        dataIndex={2}
-        selected={defaultProp.selected}
-        onSelected={defaultProp.onSelected}
+    <BoxInput
+      title="experience"
+      icon="briefcase"
+      dataIndex={2}
+      defaultProp={defaultProp}
+      data={experiences}
+    >
+      <ExperienceForm
+        onDelete={defaultProp.onDelete}
+        onCancel={defaultProp.onCancel}
+        onSave={defaultProp.onSave}
+        exp={exp}
+        onExp={onExp}
       />
-      {defaultProp.isAdd && defaultProp.selected === 2 && (
-        <ExperienceForm
-          onDelete={defaultProp.onDelete}
-          onCancel={defaultProp.onCancel}
-          onSave={defaultProp.onSave}
-          exp={exp}
-          onExp={onExp}
-        />
-      )}
-      {!defaultProp.isAdd && defaultProp.selected === 2 && (
-        <DetailTitleLists
-          data={experiences}
-          onAdd={defaultProp.onAdd}
-          onToggleHide={defaultProp.onToggleHide}
-          onEdit={defaultProp.onEdit}
-        />
-      )}
-    </div>
+    </BoxInput>
   );
 }
 
@@ -647,32 +653,21 @@ function ExperienceForm({ onDelete, onCancel, onSave, exp, onExp }) {
 
 function ProjectBox({ defaultProp, project, onProject, projects }) {
   return (
-    <div className="box">
-      <Topic
-        title="project"
-        icon="gear"
-        dataIndex={3}
-        selected={defaultProp.selected}
-        onSelected={defaultProp.onSelected}
+    <BoxInput
+      title="project"
+      icon="gear"
+      dataIndex={3}
+      defaultProp={defaultProp}
+      data={projects}
+    >
+      <ProjectForm
+        onDelete={defaultProp.onDelete}
+        onCancel={defaultProp.onCancel}
+        onSave={defaultProp.onSave}
+        project={project}
+        onProject={onProject}
       />
-      {defaultProp.isAdd && defaultProp.selected === 3 && (
-        <ProjectForm
-          onDelete={defaultProp.onDelete}
-          onCancel={defaultProp.onCancel}
-          onSave={defaultProp.onSave}
-          project={project}
-          onProject={onProject}
-        />
-      )}
-      {!defaultProp.isAdd && defaultProp.selected === 3 && (
-        <DetailTitleLists
-          data={projects}
-          onAdd={defaultProp.onAdd}
-          onToggleHide={defaultProp.onToggleHide}
-          onEdit={defaultProp.onEdit}
-        />
-      )}
-    </div>
+    </BoxInput>
   );
 }
 
@@ -720,32 +715,21 @@ function TechnologyForm({ tech, onTech }) {
 
 function CertificateBox({ defaultProp, cert, onCert, certificates }) {
   return (
-    <div className="box">
-      <Topic
-        title="certificate"
-        icon="certificate"
-        dataIndex={5}
-        selected={defaultProp.selected}
-        onSelected={defaultProp.onSelected}
+    <BoxInput
+      title="certificate"
+      icon="certificate"
+      dataIndex={5}
+      defaultProp={defaultProp}
+      data={certificates}
+    >
+      <CertificateForm
+        onDelete={defaultProp.onDelete}
+        onCancel={defaultProp.onCancel}
+        onSave={defaultProp.onSave}
+        cert={cert}
+        onCert={onCert}
       />
-      {defaultProp.isAdd && defaultProp.selected === 5 && (
-        <CertificateForm
-          onDelete={defaultProp.onDelete}
-          onCancel={defaultProp.onCancel}
-          onSave={defaultProp.onSave}
-          cert={cert}
-          onCert={onCert}
-        />
-      )}
-      {!defaultProp.isAdd && defaultProp.selected === 5 && (
-        <DetailTitleLists
-          data={certificates}
-          onAdd={defaultProp.onAdd}
-          onToggleHide={defaultProp.onToggleHide}
-          onEdit={defaultProp.onEdit}
-        />
-      )}
-    </div>
+    </BoxInput>
   );
 }
 
@@ -773,32 +757,21 @@ function CertificateForm({ onDelete, onCancel, onSave, cert, onCert }) {
 
 function LanguageBox({ defaultProp, lang, onLang, languages }) {
   return (
-    <div className="box">
-      <Topic
-        title="language"
-        icon="language"
-        dataIndex={6}
-        selected={defaultProp.selected}
-        onSelected={defaultProp.onSelected}
+    <BoxInput
+      title="language"
+      icon="language"
+      dataIndex={6}
+      defaultProp={defaultProp}
+      data={languages}
+    >
+      <LanguageForm
+        onDelete={defaultProp.onDelete}
+        onCancel={defaultProp.onCancel}
+        onSave={defaultProp.onSave}
+        lang={lang}
+        onLang={onLang}
       />
-      {defaultProp.isAdd && defaultProp.selected === 6 && (
-        <LanguageForm
-          onDelete={defaultProp.onDelete}
-          onCancel={defaultProp.onCancel}
-          onSave={defaultProp.onSave}
-          lang={lang}
-          onLang={onLang}
-        />
-      )}
-      {!defaultProp.isAdd && defaultProp.selected === 6 && (
-        <DetailTitleLists
-          data={languages}
-          onAdd={defaultProp.onAdd}
-          onToggleHide={defaultProp.onToggleHide}
-          onEdit={defaultProp.onEdit}
-        />
-      )}
-    </div>
+    </BoxInput>
   );
 }
 

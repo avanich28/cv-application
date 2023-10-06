@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Noto+Sans:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Grandstander:wght@600&family=Noto+Sans:wght@400;700&display=swap");
 
 html,
 body,
@@ -218,11 +218,15 @@ h3 {
 .detail-box {
   grid-column-start: 2;
   display: flex;
-  gap: 5px;
 }
 .mode-box,
 .detail-box {
   padding: 7px;
+  gap: 5px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border: 1px solid var(--yellow-medium);
 }
 .block {
   margin-top: 5px;
@@ -306,6 +310,8 @@ button {
 }
 .delete-btn {
   background-color: var(--red-medium);
+  /* Put gap here instead */
+  margin-right: 8px;
 }
 .cancel-btn {
   background-color: var(--transparent-color);
@@ -353,7 +359,7 @@ form div {
   flex-direction: column;
 }
 form {
-  padding: 10px 7px;
+  padding: 10px 6px;
   gap: 16px;
   background-color: var(--white-light);
 }
@@ -381,7 +387,8 @@ form label {
 
 .form-btn-container {
   display: flex;
-  gap: 10px;
+  /* Get rid of gap in flex bcs it increases the size automatically */
+  /* gap: 10px; */
 }
 .save-btn {
   margin-left: auto;
@@ -488,13 +495,105 @@ input[type="color"]::-moz-color-swatch {
 
 .cv-section {
   flex: 2;
-  min-width: 300px;
+  min-width: min-content;
   align-self: start;
   min-height: 1100px;
   grid-row-start: 1;
   grid-row-end: 4;
   background-color: var(--white-light);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  font-family: "Noto Sans", sans-serif;
+}
+.cv-header,
+.cv-main {
+  padding: 40px;
+}
+.cv-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  /* test */
+  background-color: darkslategray;
+  color: white;
+}
+/* top */
+.cv-header div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.cv-header > h1 {
+  font-size: 2rem;
+}
+.cv-main > p {
+  text-indent: 40px;
+  margin-bottom: 20px;
+}
+.detail,
+.detail > ul {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.detail > ul {
+  gap: 23px;
+}
+.detail {
+  margin-bottom: 25px;
+}
+.detail-topic {
+  padding: 8px;
+  text-align: center;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 1.05rem;
+  font-weight: bolder;
+  /* test */
+  background-color: rgb(236, 235, 235);
+  color: #000;
+}
+.detail-topic,
+h2,
+h3 {
+  text-transform: capitalize;
+}
+p {
+  line-height: 20px;
+}
+.detail-item,
+.detail-item > div,
+.detail-item > div > ul {
+  display: flex;
+}
+.date-location {
+  flex: none;
+  width: 190px;
+}
+.detail-item {
+  gap: 18px;
+}
+.detail-item > div,
+.detail-item > div > ul {
+  flex-direction: column;
+}
+.detail-item > div > ul,
+.detail-item > div > p {
+  margin-top: 7px;
+}
+.detail-item > div,
+.detail-item > div > ul {
+  gap: 5px;
+}
+.project-name,
+.cert-name {
+  margin-bottom: 5px;
+}
+ul.lang-lists {
+  flex-direction: row;
+  gap: 10px;
+}
+.lang-test {
+  text-transform: uppercase;
 }
 
 .footer {

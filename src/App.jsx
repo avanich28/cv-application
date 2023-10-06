@@ -95,11 +95,11 @@ export default function App() {
   function handleClear() {
     setEdit(false);
     setSelectedEdit(editDefault);
-    setEduc({ ...educDefault, id: educ.id });
-    setExp({ ...expDefault, id: exp.id });
-    setProject({ ...projectDefault, id: project.id });
-    setCert({ ...certDefault, id: cert.id });
-    setLang({ ...langDefault, id: lang.id });
+    setEduc({ ...educDefault, id: crypto.randomUUID() });
+    setExp({ ...expDefault, id: crypto.randomUUID() });
+    setProject({ ...projectDefault, id: crypto.randomUUID() });
+    setCert({ ...certDefault, id: crypto.randomUUID() });
+    setLang({ ...langDefault, id: crypto.randomUUID() });
   }
 
   function handleChangePersonal(e) {
@@ -1048,7 +1048,7 @@ function CVSection({
 
 function HeadContent({ personal }) {
   return (
-    <header>
+    <header className="cv-header">
       <h1>{personal.firstName + " " + personal.lastName}</h1>
       <div>
         <p>
@@ -1070,8 +1070,8 @@ function HeadContent({ personal }) {
 
 function MainContent({ children, personal }) {
   return (
-    <main>
-      <p>{personal.intro}</p>
+    <main className="cv-main">
+      {personal.intro && <p>{personal.intro}</p>}
       {children}
     </main>
   );
@@ -1129,19 +1129,21 @@ function EducationDetail({
   location,
 }) {
   return (
-    <li className={isHide ? "hide" : ""}>
+    <li className={`detail-item ${isHide && "hide"}`}>
       <DateAndLocation
         startDate={startDate}
         endDate={endDate}
         location={location}
       />
-      <h2>{school}</h2>
-      <p>{degree}</p>
-      <ul>
-        <li>{major}</li>
-        <li>{minor}</li>
-        <li>{gpa}</li>
-      </ul>
+      <div>
+        <h2>{school}</h2>
+        <p>{degree}</p>
+        <ul>
+          <li>{major && `Major: ${major}`}</li>
+          <li>{minor && `Minor: ${minor}`}</li>
+          <li>{gpa && `GPA: ${gpa}`}</li>
+        </ul>
+      </div>
     </li>
   );
 }
@@ -1174,15 +1176,17 @@ function ExperienceDetail({
   description,
 }) {
   return (
-    <li className={isHide ? "hide" : ""}>
+    <li className={`detail-item ${isHide && "hide"}`}>
       <DateAndLocation
         startDate={startDate}
         endDate={endDate}
         location={location}
       />
-      <h2>{company}</h2>
-      <h3>{position}</h3>
-      <p>{description}</p>
+      <div>
+        {company && <h2>{company}</h2>}
+        {position && <h3>{position}</h3>}
+        {description && <p>{description}</p>}
+      </div>
     </li>
   );
 }
@@ -1208,7 +1212,7 @@ function ProjectDetailLists({ project, projects, edit, selectedEdit }) {
 function ProjectDetail({ isHide, project, description }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <h2>{project}</h2>
+      <h2 className="project-name">{project}</h2>
       <p>{description}</p>
     </li>
   );
@@ -1217,7 +1221,7 @@ function ProjectDetail({ isHide, project, description }) {
 function TechnologyDetail({ tech }) {
   return (
     <DetailLayout title="tech-stack">
-      <p>{tech}</p>
+      {tech && <p>{`Tools/Languages: ${tech}`}</p>}
     </DetailLayout>
   );
 }
@@ -1243,17 +1247,17 @@ function CertificateDetailLists({ cert, certificates, edit, selectedEdit }) {
 function CertificateDetail({ isHide, certificate, year, description }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <p>{certificate}</p>
-      <p>{description}</p>
-      <span>{year && `(${year})`}</span>
+      <h2 className="cert-name">{certificate}</h2>
+      <span>{description}</span>
+      <span>{year && ` (${year})`}</span>
     </li>
   );
 }
 
 function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
   return (
-    <DetailLayout title="language">
-      <ul>
+    <DetailLayout title="languages">
+      <ul className="lang-lists">
         {languages.length > 0 &&
           languages.map((obj) =>
             selectedEdit.id === obj.id && obj.type === selectedEdit.type ? (
@@ -1271,7 +1275,8 @@ function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
 function LanguageDetail({ isHide, langTest, scores }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <span>{langTest}</span>
+      <span className="lang-test">{langTest}</span>
+      {langTest && ": "}
       <span>{scores}</span>
     </li>
   );

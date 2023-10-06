@@ -343,7 +343,7 @@ li > button {
 .faEye-btn:hover {
   color: inherit;
 }
-.hide {
+li.hide {
   display: none;
 }
 
@@ -407,6 +407,7 @@ textarea {
 textarea {
   overflow: auto;
   font-family: inherit;
+  resize: none;
 }
 
 .customize-box {
@@ -502,7 +503,6 @@ input[type="color"]::-moz-color-swatch {
   grid-row-end: 4;
   background-color: var(--white-light);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  font-family: "Noto Sans", sans-serif;
 }
 .cv-header,
 .cv-main {
@@ -514,7 +514,6 @@ input[type="color"]::-moz-color-swatch {
   align-items: center;
   gap: 20px;
   /* test */
-  background-color: darkslategray;
   color: white;
 }
 /* top */
@@ -545,7 +544,6 @@ input[type="color"]::-moz-color-swatch {
 .detail-topic {
   padding: 8px;
   text-align: center;
-  font-family: "Noto Sans", sans-serif;
   font-size: 1.05rem;
   font-weight: bolder;
   /* test */
@@ -557,9 +555,18 @@ h2,
 h3 {
   text-transform: capitalize;
 }
-p {
+p,
+pre {
   line-height: 20px;
 }
+pre {
+  white-space: pre-wrap; /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
 .detail-item,
 .detail-item > div,
 .detail-item > div > ul {
@@ -577,7 +584,7 @@ p {
   flex-direction: column;
 }
 .detail-item > div > ul,
-.detail-item > div > p {
+.detail-item > div:nth-of-type(2) > pre {
   margin-top: 7px;
 }
 .detail-item > div,

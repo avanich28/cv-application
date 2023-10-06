@@ -72,27 +72,106 @@ const editDefault = {
 const defaultCustomize = {
   color: "black",
   layout: "top",
-  font: "serif",
+  font: "'Noto Sans', sans-serif",
+};
+
+const demoDetail = {
+  personal: {
+    firstName: "Huckleberry",
+    lastName: "Finn",
+    email: "finnhuckleberry@gmail.com",
+    phone: "+66 091 234 567",
+    address: "Samut Prakan, Thailand",
+    intro: "I look forward to applying for full-stack position.",
+  },
+  educations: [
+    {
+      id: crypto.randomUUID(),
+      type: "school",
+      isHide: false,
+      school: "Hello World University",
+      degree: "Bachelors in Economics",
+      major: "Monetary and Fiscal Policy",
+      minor: "Business Economics",
+      gpa: "3.71",
+      startDate: "01/01/2018",
+      endDate: "01/01/2020",
+      location: "Bangkok, Thailand",
+    },
+  ],
+  experiences: [
+    {
+      id: crypto.randomUUID(),
+      type: "company",
+      isHide: false,
+      company: "Ampas Auto Mirror Co., Ltd.",
+      position: "Sales Data Analyst and Export Sales",
+      startDate: "01/01/2021",
+      endDate: "01/01/2022",
+      location: "Samut Prakan, Thailand",
+      description:
+        "Designed system for evaluating the total sales and liabilities in each month in order to control the company profit and speculate the market trend\n\nCreated a market plan to expand foreign markets and did product pricing based on exchange rate to foreign customers.",
+    },
+  ],
+  projects: [
+    {
+      id: crypto.randomUUID(),
+      type: "project",
+      isHide: false,
+      project: "Todo List",
+      description:
+        "This project designed for users who want to list their tasks in each day, month, or week",
+    },
+  ],
+  tech: "HTML, CSS, Javascript, React, Node js, Typescript, SASS, Next js, Postgre SQL, Webpack, JEST",
+  certificates: [
+    {
+      id: crypto.randomUUID(),
+      type: "certificate",
+      isHide: false,
+      certificate: "The Complete JavaScript Course 2023: From Zero to Expert!",
+      year: "2023",
+      description:
+        "Learn Javascript online course with Jonas Schmedtmann in Udemy",
+    },
+  ],
+  languages: [
+    {
+      id: crypto.randomUUID(),
+      type: "langTest",
+      isHide: false,
+      langTest: "toeic",
+      scores: "781",
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "langTest",
+      isHide: false,
+      langTest: "hsk 4",
+      scores: "245",
+    },
+  ],
 };
 
 export default function App() {
-  const [personal, setPersonal] = useState(personalDefault);
+  const [personal, setPersonal] = useState(demoDetail.personal);
+  const [tech, setTech] = useState(demoDetail.tech);
   const [educ, setEduc] = useState(educDefault);
   const [exp, setExp] = useState(expDefault);
   const [project, setProject] = useState(projectDefault);
-  const [tech, setTech] = useState("");
   const [cert, setCert] = useState(certDefault);
   const [lang, setLang] = useState(langDefault);
-  const [educations, setEducations] = useState([]);
-  const [experiences, setExperiences] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [certificates, setCertificates] = useState([]);
-  const [languages, setLanguages] = useState([]);
+  const [educations, setEducations] = useState(demoDetail.educations);
+  const [experiences, setExperiences] = useState(demoDetail.experiences);
+  const [projects, setProjects] = useState(demoDetail.projects);
+  const [certificates, setCertificates] = useState(demoDetail.certificates);
+  const [languages, setLanguages] = useState(demoDetail.languages);
   const [edit, setEdit] = useState(false);
   const [selectedEdit, setSelectedEdit] = useState(editDefault);
   const [customize, setCustomize] = useState(defaultCustomize);
 
-  function handleClear() {
+  // Clear form when click delete, cancel, and save buttons
+  function handleClearObj() {
     setEdit(false);
     setSelectedEdit(editDefault);
     setEduc({ ...educDefault, id: crypto.randomUUID() });
@@ -100,6 +179,30 @@ export default function App() {
     setProject({ ...projectDefault, id: crypto.randomUUID() });
     setCert({ ...certDefault, id: crypto.randomUUID() });
     setLang({ ...langDefault, id: crypto.randomUUID() });
+  }
+
+  // Clear all page
+  function handleClickClearDetail() {
+    handleClearObj();
+    setPersonal(personalDefault);
+    setTech("");
+    setEducations([]);
+    setExperiences([]);
+    setProjects([]);
+    setCertificates([]);
+    setLanguages([]);
+    setCustomize(defaultCustomize);
+  }
+
+  function handleClickDemoDetail() {
+    handleClearObj();
+    setPersonal(demoDetail.personal);
+    setTech(demoDetail.tech);
+    setEducations(demoDetail.educations);
+    setExperiences(demoDetail.experiences);
+    setProjects(demoDetail.projects);
+    setCertificates(demoDetail.certificates);
+    setLanguages(demoDetail.languages);
   }
 
   function handleChangePersonal(e) {
@@ -196,7 +299,7 @@ export default function App() {
     if (type === "project") deleteObj(id, setProjects);
     if (type === "certificate") deleteObj(id, setCertificates);
     if (type === "langTest") deleteObj(id, setLanguages);
-    handleClear(type);
+    handleClearObj(type);
   }
 
   function handleHide(id, data, setterFunc) {
@@ -239,7 +342,9 @@ export default function App() {
       <Logo />
       <Main>
         <InformationSection
-          onClear={handleClear}
+          onClear={handleClickClearDetail}
+          onDemo={handleClickDemoDetail}
+          onClearObj={handleClearObj}
           onToggleHide={toggleHide}
           edit={edit}
           onEdit={handleEdit}
@@ -323,7 +428,8 @@ function InformationSection(props) {
   function handleClickCancelAndSave(e) {
     e.preventDefault();
     setIsAdd(false);
-    if (props.edit) props.onClear();
+    // Clear form for adding button
+    props.onClearObj();
   }
 
   const defaultProp = {
@@ -341,7 +447,7 @@ function InformationSection(props) {
   return (
     <section className="information-section">
       <ModeBox mode={mode} onMode={setMode} />
-      <DetailBox />
+      <DetailBox onClear={props.onClear} onDemo={props.onDemo} />
       {mode === "content" && (
         <>
           <PersonalDetailsBox
@@ -421,15 +527,17 @@ function ModeBox({ mode, onMode }) {
 
 //////////////////////////////
 
-function DetailBox({ onClickClear, onClickDemo }) {
+function DetailBox({ onClear, onDemo }) {
   return (
     <div className="detail-box box">
       <div>
-        <button className="detail-btn">
+        <button className="detail-btn" onClick={onClear}>
           <FontAwesomeIcon icon={["fas", "trash-can"]} />{" "}
           <span>Clear detail</span>
         </button>
-        <button className="detail-btn">Demo detail</button>
+        <button className="detail-btn" onClick={onDemo}>
+          Demo detail
+        </button>
       </div>
       <SavePDFButton />
     </div>
@@ -956,8 +1064,8 @@ function FontLists({ customize, onCustomize }) {
   return (
     <CustomizeBox title="font" className="font">
       {[
+        ["'Noto Sans', sans-serif", "sans"],
         ["serif", "serif"],
-        ["sans-serif", "sans"],
         ["monospace", "mono"],
       ].map((font, i) => (
         <Font
@@ -1012,8 +1120,8 @@ function CVSection({
   };
 
   return (
-    <section className="cv-section">
-      <HeadContent personal={personal} />
+    <section className="cv-section" style={{ fontFamily: customize.font }}>
+      <HeadContent personal={personal} bgColor={customize.color} />
       <MainContent personal={personal}>
         <EducationDetailLists
           {...defaultProp}
@@ -1046,23 +1154,29 @@ function CVSection({
   );
 }
 
-function HeadContent({ personal }) {
+function HeadContent({ personal, bgColor, color }) {
   return (
-    <header className="cv-header">
+    <header className="cv-header" style={{ backgroundColor: bgColor }}>
       <h1>{personal.firstName + " " + personal.lastName}</h1>
       <div>
-        <p>
-          <FontAwesomeIcon icon={("fas", "envelope")} />{" "}
-          <span>{personal.email}</span>
-        </p>
-        <p>
-          <FontAwesomeIcon icon={["fas", "phone"]} />{" "}
-          <span>{personal.phone}</span>
-        </p>
-        <p>
-          <FontAwesomeIcon icon={["fas", "location-dot"]} />{" "}
-          <span>{personal.address}</span>
-        </p>
+        {personal.email && (
+          <p>
+            <FontAwesomeIcon icon={("fas", "envelope")} />{" "}
+            <span>{personal.email}</span>
+          </p>
+        )}
+        {personal.phone && (
+          <p>
+            <FontAwesomeIcon icon={["fas", "phone"]} />{" "}
+            <span>{personal.phone}</span>
+          </p>
+        )}
+        {personal.address && (
+          <p>
+            <FontAwesomeIcon icon={["fas", "location-dot"]} />{" "}
+            <span>{personal.address}</span>
+          </p>
+        )}
       </div>
     </header>
   );
@@ -1077,31 +1191,51 @@ function MainContent({ children, personal }) {
   );
 }
 
-function DetailLayout({ title, children }) {
+function DetailLayout({ title, children, isEmpty = true }) {
   return (
-    <div className="detail">
-      <h1 className="detail-topic">{title}</h1>
-      {children}
-    </div>
+    <>
+      {!isEmpty && (
+        <div className="detail">
+          <h1 className="detail-topic">{title}</h1>
+          {children}
+        </div>
+      )}
+    </>
   );
 }
 
 function DateAndLocation({ startDate, endDate, location }) {
   return (
     <div className="date-location">
-      <p>
-        {startDate}
-        {startDate && endDate ? " - " : ""}
-        {endDate}
-      </p>
-      <p>{location}</p>
+      {(startDate || endDate) && (
+        <p>
+          {startDate}
+          {startDate && endDate ? " - " : ""}
+          {endDate}
+        </p>
+      )}
+      {location && <p>{location}</p>}
     </div>
   );
 }
 
+function checkEmpty(obj, data) {
+  const curObj = Object.values(obj)
+    .slice(3)
+    .every((input) => input === "");
+
+  const curData = data.every((obj) => obj.isHide === true);
+
+  return (curObj && !data.length) || (curData && data.length);
+}
+
 function EducationDetailLists({ educ, educations, edit, selectedEdit }) {
+  const isEmpty = checkEmpty(educ, educations);
+  console.log(educ);
+  console.log(isEmpty);
+
   return (
-    <DetailLayout title="education">
+    <DetailLayout title="education" isEmpty={isEmpty}>
       <ul>
         {educations.length > 0 &&
           educations.map((obj) =>
@@ -1136,21 +1270,25 @@ function EducationDetail({
         location={location}
       />
       <div>
-        <h2>{school}</h2>
-        <p>{degree}</p>
-        <ul>
-          <li>{major && `Major: ${major}`}</li>
-          <li>{minor && `Minor: ${minor}`}</li>
-          <li>{gpa && `GPA: ${gpa}`}</li>
-        </ul>
+        {school && <h2>{school}</h2>}
+        {degree && <p>{degree}</p>}
+        {(major || minor || gpa) && (
+          <ul>
+            {major && <li>{`Major: ${major}`}</li>}
+            {minor && <li>{`Minor: ${minor}`}</li>}
+            {gpa && <li>{`GPA: ${gpa}`}</li>}
+          </ul>
+        )}
       </div>
     </li>
   );
 }
 
 function ExperienceDetailLists({ exp, experiences, edit, selectedEdit }) {
+  const isEmpty = checkEmpty(exp, experiences);
+
   return (
-    <DetailLayout title="experience">
+    <DetailLayout title="experience" isEmpty={isEmpty}>
       <ul>
         {experiences.length > 0 &&
           experiences.map((obj) =>
@@ -1185,15 +1323,17 @@ function ExperienceDetail({
       <div>
         {company && <h2>{company}</h2>}
         {position && <h3>{position}</h3>}
-        {description && <p>{description}</p>}
+        {description && <pre>{description}</pre>}
       </div>
     </li>
   );
 }
 
 function ProjectDetailLists({ project, projects, edit, selectedEdit }) {
+  const isEmpty = checkEmpty(project, projects);
+
   return (
-    <DetailLayout title="project">
+    <DetailLayout title="project" isEmpty={isEmpty}>
       <ul>
         {projects.length > 0 &&
           projects.map((obj) =>
@@ -1212,23 +1352,27 @@ function ProjectDetailLists({ project, projects, edit, selectedEdit }) {
 function ProjectDetail({ isHide, project, description }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <h2 className="project-name">{project}</h2>
-      <p>{description}</p>
+      {project && <h2 className="project-name">{project}</h2>}
+      {description && <p>{description}</p>}
     </li>
   );
 }
 
 function TechnologyDetail({ tech }) {
+  const isEmpty = !tech.length;
+
   return (
-    <DetailLayout title="tech-stack">
+    <DetailLayout title="tech-stack" isEmpty={isEmpty}>
       {tech && <p>{`Tools/Languages: ${tech}`}</p>}
     </DetailLayout>
   );
 }
 
 function CertificateDetailLists({ cert, certificates, edit, selectedEdit }) {
+  const isEmpty = checkEmpty(cert, certificates);
+
   return (
-    <DetailLayout title="certificate">
+    <DetailLayout title="certificate" isEmpty={isEmpty}>
       <ul>
         {certificates.length > 0 &&
           certificates.map((obj) =>
@@ -1247,16 +1391,22 @@ function CertificateDetailLists({ cert, certificates, edit, selectedEdit }) {
 function CertificateDetail({ isHide, certificate, year, description }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <h2 className="cert-name">{certificate}</h2>
-      <span>{description}</span>
-      <span>{year && ` (${year})`}</span>
+      {certificate && <h2 className="cert-name">{certificate}</h2>}
+      {(description || year) && (
+        <>
+          <span>{description}</span>
+          <span>{year && ` (${year})`}</span>
+        </>
+      )}
     </li>
   );
 }
 
 function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
+  const isEmpty = checkEmpty(lang, languages);
+
   return (
-    <DetailLayout title="languages">
+    <DetailLayout title="languages" isEmpty={isEmpty}>
       <ul className="lang-lists">
         {languages.length > 0 &&
           languages.map((obj) =>
@@ -1275,9 +1425,13 @@ function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
 function LanguageDetail({ isHide, langTest, scores }) {
   return (
     <li className={isHide ? "hide" : ""}>
-      <span className="lang-test">{langTest}</span>
-      {langTest && ": "}
-      <span>{scores}</span>
+      {(langTest || scores) && (
+        <>
+          <span className="lang-test">{langTest}</span>
+          {langTest && ": "}
+          <span>{scores}</span>
+        </>
+      )}
     </li>
   );
 }
@@ -1292,3 +1446,6 @@ function Footer() {
     </footer>
   );
 }
+
+const test = "Hello\nWorld";
+console.log(test);

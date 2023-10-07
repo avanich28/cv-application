@@ -276,9 +276,17 @@ button {
   border-radius: 12px;
 }
 .mode-btn:hover,
-.detail-btn:hover,
 .active-mode {
   background-color: var(--white-medium);
+}
+.detail-btn:hover {
+  color: var(--white-light);
+}
+.clear-detail:hover {
+  background-color: var(--red-medium);
+}
+.demo-detail:hover {
+  background-color: var(--green-medium);
 }
 
 .info-btn {
@@ -388,7 +396,6 @@ form label {
 .form-btn-container {
   display: flex;
   /* Get rid of gap in flex bcs it increases the size automatically */
-  /* gap: 10px; */
 }
 .save-btn {
   margin-left: auto;
@@ -496,27 +503,33 @@ input[type="color"]::-moz-color-swatch {
 
 .cv-section {
   flex: 2;
-  min-width: min-content;
   align-self: start;
+  min-width: min-content;
   min-height: 1100px;
-  grid-row-start: 1;
-  grid-row-end: 4;
   background-color: var(--white-light);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.layout-left,
+.layout-right {
+  display: flex;
+}
+.layout-right {
+  flex-direction: row-reverse;
 }
 .cv-header,
 .cv-main {
   padding: 40px;
+}
+.layout-left > .cv-header,
+.layout-right > .cv-header {
+  padding: 40px 10px;
 }
 .cv-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  /* test */
-  color: white;
 }
-/* top */
 .cv-header div {
   display: flex;
   flex-wrap: wrap;
@@ -546,9 +559,6 @@ input[type="color"]::-moz-color-swatch {
   text-align: center;
   font-size: 1.05rem;
   font-weight: bolder;
-  /* test */
-  background-color: rgb(236, 235, 235);
-  color: #000;
 }
 .detail-topic,
 h2,

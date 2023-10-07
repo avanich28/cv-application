@@ -70,7 +70,7 @@ const editDefault = {
 };
 
 const defaultCustomize = {
-  color: "black",
+  color: "#445D48",
   layout: "top",
   font: "'Noto Sans', sans-serif",
 };
@@ -79,8 +79,8 @@ const demoDetail = {
   personal: {
     firstName: "Huckleberry",
     lastName: "Finn",
-    email: "finnhuckleberry@gmail.com",
-    phone: "+66 091 234 567",
+    email: "finhuck@gmail.com",
+    phone: "+66 91 234 567",
     address: "Samut Prakan, Thailand",
     intro: "I look forward to applying for full-stack position.",
   },
@@ -93,7 +93,7 @@ const demoDetail = {
       degree: "Bachelors in Economics",
       major: "Monetary and Fiscal Policy",
       minor: "Business Economics",
-      gpa: "3.71",
+      gpa: "3.71/4.00",
       startDate: "01/01/2018",
       endDate: "01/01/2020",
       location: "Bangkok, Thailand",
@@ -141,14 +141,14 @@ const demoDetail = {
       type: "langTest",
       isHide: false,
       langTest: "toeic",
-      scores: "781",
+      scores: "781/900",
     },
     {
       id: crypto.randomUUID(),
       type: "langTest",
       isHide: false,
       langTest: "hsk 4",
-      scores: "245",
+      scores: "245/300",
     },
   ],
 };
@@ -181,7 +181,7 @@ export default function App() {
     setLang({ ...langDefault, id: crypto.randomUUID() });
   }
 
-  // Clear all page
+  // Clear all cv page
   function handleClickClearDetail() {
     handleClearObj();
     setPersonal(personalDefault);
@@ -531,11 +531,11 @@ function DetailBox({ onClear, onDemo }) {
   return (
     <div className="detail-box box">
       <div>
-        <button className="detail-btn" onClick={onClear}>
+        <button className="detail-btn clear-detail" onClick={onClear}>
           <FontAwesomeIcon icon={["fas", "trash-can"]} />{" "}
           <span>Clear detail</span>
         </button>
-        <button className="detail-btn" onClick={onDemo}>
+        <button className="detail-btn demo-detail" onClick={onDemo}>
           Demo detail
         </button>
       </div>
@@ -1097,6 +1097,15 @@ function Font({ font, abbreviation, onCustomize, isSelected }) {
 
 //////////////////////////////////////////
 
+function hexIsLight(color) {
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  const bright = (r * 299 + g * 587 + b * 114) / 1000;
+  return bright > 155;
+}
+
 function CVSection({
   edit,
   selectedEdit,
@@ -1114,14 +1123,25 @@ function CVSection({
   languages,
   customize,
 }) {
+  const bright = hexIsLight(customize.color);
+
   const defaultProp = {
     edit,
     selectedEdit,
+    colorTitle: customize.color,
+    bgTitle: bright ? "#4F4C4C" : "#ECEBEB",
   };
 
   return (
-    <section className="cv-section" style={{ fontFamily: customize.font }}>
-      <HeadContent personal={personal} bgColor={customize.color} />
+    <section
+      className={`cv-section layout-${customize.layout}`}
+      style={{ fontFamily: customize.font }}
+    >
+      <HeadContent
+        personal={personal}
+        bgColor={customize.color}
+        fontColor={bright ? "black" : "white"}
+      />
       <MainContent personal={personal}>
         <EducationDetailLists
           {...defaultProp}
@@ -1138,7 +1158,7 @@ function CVSection({
           project={project}
           projects={projects}
         />
-        <TechnologyDetail tech={tech} />
+        <TechnologyDetail {...defaultProp} tech={tech} />
         <CertificateDetailLists
           {...defaultProp}
           cert={cert}
@@ -1154,9 +1174,12 @@ function CVSection({
   );
 }
 
-function HeadContent({ personal, bgColor, color }) {
+function HeadContent({ personal, bgColor, fontColor }) {
   return (
-    <header className="cv-header" style={{ backgroundColor: bgColor }}>
+    <header
+      className="cv-header"
+      style={{ backgroundColor: bgColor, color: fontColor }}
+    >
       <h1>{personal.firstName + " " + personal.lastName}</h1>
       <div>
         {personal.email && (
@@ -1191,12 +1214,23 @@ function MainContent({ children, personal }) {
   );
 }
 
-function DetailLayout({ title, children, isEmpty = true }) {
+function DetailLayout({
+  title,
+  children,
+  isEmpty = true,
+  colorTitle,
+  bgTitle,
+}) {
   return (
     <>
       {!isEmpty && (
         <div className="detail">
-          <h1 className="detail-topic">{title}</h1>
+          <h1
+            className="detail-topic"
+            style={{ backgroundColor: bgTitle, color: colorTitle }}
+          >
+            {title}
+          </h1>
           {children}
         </div>
       )}
@@ -1229,13 +1263,23 @@ function checkEmpty(obj, data) {
   return (curObj && !data.length) || (curData && data.length);
 }
 
-function EducationDetailLists({ educ, educations, edit, selectedEdit }) {
+function EducationDetailLists({
+  educ,
+  educations,
+  edit,
+  selectedEdit,
+  colorTitle,
+  bgTitle,
+}) {
   const isEmpty = checkEmpty(educ, educations);
-  console.log(educ);
-  console.log(isEmpty);
 
   return (
-    <DetailLayout title="education" isEmpty={isEmpty}>
+    <DetailLayout
+      title="education"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       <ul>
         {educations.length > 0 &&
           educations.map((obj) =>
@@ -1284,11 +1328,23 @@ function EducationDetail({
   );
 }
 
-function ExperienceDetailLists({ exp, experiences, edit, selectedEdit }) {
+function ExperienceDetailLists({
+  exp,
+  experiences,
+  edit,
+  selectedEdit,
+  colorTitle,
+  bgTitle,
+}) {
   const isEmpty = checkEmpty(exp, experiences);
 
   return (
-    <DetailLayout title="experience" isEmpty={isEmpty}>
+    <DetailLayout
+      title="experience"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       <ul>
         {experiences.length > 0 &&
           experiences.map((obj) =>
@@ -1329,11 +1385,23 @@ function ExperienceDetail({
   );
 }
 
-function ProjectDetailLists({ project, projects, edit, selectedEdit }) {
+function ProjectDetailLists({
+  project,
+  projects,
+  edit,
+  selectedEdit,
+  colorTitle,
+  bgTitle,
+}) {
   const isEmpty = checkEmpty(project, projects);
 
   return (
-    <DetailLayout title="project" isEmpty={isEmpty}>
+    <DetailLayout
+      title="project"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       <ul>
         {projects.length > 0 &&
           projects.map((obj) =>
@@ -1358,21 +1426,38 @@ function ProjectDetail({ isHide, project, description }) {
   );
 }
 
-function TechnologyDetail({ tech }) {
+function TechnologyDetail({ tech, colorTitle, bgTitle }) {
   const isEmpty = !tech.length;
 
   return (
-    <DetailLayout title="tech-stack" isEmpty={isEmpty}>
+    <DetailLayout
+      title="tech-stack"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       {tech && <p>{`Tools/Languages: ${tech}`}</p>}
     </DetailLayout>
   );
 }
 
-function CertificateDetailLists({ cert, certificates, edit, selectedEdit }) {
+function CertificateDetailLists({
+  cert,
+  certificates,
+  edit,
+  selectedEdit,
+  colorTitle,
+  bgTitle,
+}) {
   const isEmpty = checkEmpty(cert, certificates);
 
   return (
-    <DetailLayout title="certificate" isEmpty={isEmpty}>
+    <DetailLayout
+      title="certificate"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       <ul>
         {certificates.length > 0 &&
           certificates.map((obj) =>
@@ -1402,11 +1487,23 @@ function CertificateDetail({ isHide, certificate, year, description }) {
   );
 }
 
-function LanguageDetailLists({ lang, languages, edit, selectedEdit }) {
+function LanguageDetailLists({
+  lang,
+  languages,
+  edit,
+  selectedEdit,
+  colorTitle,
+  bgTitle,
+}) {
   const isEmpty = checkEmpty(lang, languages);
 
   return (
-    <DetailLayout title="languages" isEmpty={isEmpty}>
+    <DetailLayout
+      title="languages"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
       <ul className="lang-lists">
         {languages.length > 0 &&
           languages.map((obj) =>
@@ -1446,6 +1543,3 @@ function Footer() {
     </footer>
   );
 }
-
-const test = "Hello\nWorld";
-console.log(test);

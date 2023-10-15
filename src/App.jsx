@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as icons from "./icon.jsx";
@@ -79,7 +80,7 @@ const demoDetail = {
   personal: {
     firstName: "Huckleberry",
     lastName: "Finn",
-    email: "finhuck@gmail.com",
+    email: "finnhuck@gmail.com",
     phone: "+66 91 234 567",
     address: "Samut Prakan, Thailand",
     intro: "I look forward to applying for full-stack position.",
@@ -132,7 +133,7 @@ const demoDetail = {
       certificate: "The Complete JavaScript Course 2023: From Zero to Expert!",
       year: "2023",
       description:
-        "Learn Javascript online course with Jonas Schmedtmann in Udemy",
+        "Learn Javascript with Jonas Schmedtmann in Udemy online course",
     },
   ],
   languages: [
@@ -169,6 +170,13 @@ export default function App() {
   const [edit, setEdit] = useState(false);
   const [selectedEdit, setSelectedEdit] = useState(editDefault);
   const [customize, setCustomize] = useState(defaultCustomize);
+  const componentRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "resume",
+    onAfterPrint: () => alert("Print success"),
+  });
 
   // Clear form when click delete, cancel, and save buttons
   function handleClearObj() {
@@ -342,6 +350,7 @@ export default function App() {
       <Logo />
       <Main>
         <InformationSection
+          onPDF={handlePrint}
           onClear={handleClickClearDetail}
           onDemo={handleClickDemoDetail}
           onClearObj={handleClearObj}
@@ -373,6 +382,7 @@ export default function App() {
           languages={languages}
         />
         <CVSection
+          componentRef={componentRef}
           edit={edit}
           selectedEdit={selectedEdit}
           personal={personal}
@@ -447,7 +457,11 @@ function InformationSection(props) {
   return (
     <section className="information-section">
       <ModeBox mode={mode} onMode={setMode} />
-      <DetailBox onClear={props.onClear} onDemo={props.onDemo} />
+      <DetailBox
+        onClear={props.onClear}
+        onDemo={props.onDemo}
+        onPDF={props.onPDF}
+      />
       {mode === "content" && (
         <>
           <PersonalDetailsBox
@@ -525,9 +539,7 @@ function ModeBox({ mode, onMode }) {
   );
 }
 
-//////////////////////////////
-
-function DetailBox({ onClear, onDemo }) {
+function DetailBox({ onClear, onDemo, onPDF }) {
   return (
     <div className="detail-box box">
       <div>
@@ -539,14 +551,16 @@ function DetailBox({ onClear, onDemo }) {
           Demo detail
         </button>
       </div>
-      <SavePDFButton />
+      <SavePDFButton onPDF={onPDF} />
     </div>
   );
 }
 
-function SavePDFButton({ onClick }) {
+/////////////////////////////
+
+function SavePDFButton({ onPDF }) {
   return (
-    <button className="save-pdf-btn small-btn">
+    <button className="save-pdf-btn small-btn" onClick={onPDF}>
       <span>
         <FontAwesomeIcon icon={["fas", "download"]} /> <span>PDF</span>
       </span>
@@ -1106,70 +1120,59 @@ function hexIsLight(color) {
   return bright > 155;
 }
 
-function CVSection({
-  edit,
-  selectedEdit,
-  personal,
-  tech,
-  educ,
-  educations,
-  exp,
-  experiences,
-  project,
-  projects,
-  cert,
-  certificates,
-  lang,
-  languages,
-  customize,
-}) {
-  const bright = hexIsLight(customize.color);
+function CVSection(props) {
+  const bright = hexIsLight(props.customize.color);
 
   const defaultProp = {
-    edit,
-    selectedEdit,
-    colorTitle: customize.color,
+    edit: props.edit,
+    selectedEdit: props.selectedEdit,
+    colorTitle: props.customize.color,
     bgTitle: bright ? "#4F4C4C" : "#ECEBEB",
   };
 
   return (
     <section
-      className={`cv-section layout-${customize.layout}`}
-      style={{ fontFamily: customize.font }}
+      className={`cv-section`}
+      style={{ fontFamily: props.customize.font }}
     >
-      <HeadContent
-        personal={personal}
-        bgColor={customize.color}
-        fontColor={bright ? "black" : "white"}
-      />
-      <MainContent personal={personal}>
-        <EducationDetailLists
-          {...defaultProp}
-          educ={educ}
-          educations={educations}
+      <div
+        className={`cv-container layout-${props.customize.layout}`}
+        ref={props.componentRef}
+      >
+        <HeadContent
+          personal={props.personal}
+          bgColor={props.customize.color}
+          fontColor={bright ? "black" : "white"}
         />
-        <ExperienceDetailLists
-          {...defaultProp}
-          exp={exp}
-          experiences={experiences}
-        />
-        <ProjectDetailLists
-          {...defaultProp}
-          project={project}
-          projects={projects}
-        />
-        <TechnologyDetail {...defaultProp} tech={tech} />
-        <CertificateDetailLists
-          {...defaultProp}
-          cert={cert}
-          certificates={certificates}
-        />
-        <LanguageDetailLists
-          {...defaultProp}
-          lang={lang}
-          languages={languages}
-        />
-      </MainContent>
+        <MainContent personal={props.personal}>
+          <EducationDetailLists
+            {...defaultProp}
+            educ={props.educ}
+            educations={props.educations}
+          />
+          <ExperienceDetailLists
+            {...defaultProp}
+            exp={props.exp}
+            experiences={props.experiences}
+          />
+          <ProjectDetailLists
+            {...defaultProp}
+            project={props.project}
+            projects={props.projects}
+          />
+          <TechnologyDetail {...defaultProp} tech={props.tech} />
+          <CertificateDetailLists
+            {...defaultProp}
+            cert={props.cert}
+            certificates={props.certificates}
+          />
+          <LanguageDetailLists
+            {...defaultProp}
+            lang={props.lang}
+            languages={props.languages}
+          />
+        </MainContent>
+      </div>
     </section>
   );
 }

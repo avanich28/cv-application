@@ -509,16 +509,18 @@ input[type="color"]::-moz-color-swatch {
   background-color: var(--white-light);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-.layout-left,
-.layout-right {
+.cv-container {
   display: flex;
+}
+.layout-top {
+  flex-direction: column;
 }
 .layout-right {
   flex-direction: row-reverse;
 }
 .cv-header,
 .cv-main {
-  padding: 40px;
+  padding: 30px;
 }
 .layout-left > .cv-header,
 .layout-right > .cv-header {
@@ -567,7 +569,7 @@ h3 {
 }
 p,
 pre {
-  line-height: 20px;
+  line-height: 18px;
 }
 pre {
   white-space: pre-wrap; /* Since CSS 2.1 */
@@ -611,6 +613,28 @@ ul.lang-lists {
 }
 .lang-test {
   text-transform: uppercase;
+}
+
+@media print {
+  html,
+  body {
+    padding: 0;
+  }
+  .cv-container {
+    width: 210mm;
+    height: 297mm;
+    font-size: 0.8rem;
+  }
+  .detail-topic {
+    font-size: 1rem;
+  }
+  .cv-main > div:not(div:nth-of-type(4)) {
+    margin-bottom: -8px;
+  }
+  .cv-main > p,
+  .cv-main > div:nth-of-type(4) {
+    margin-bottom: 13px;
+  }
 }
 
 .footer {

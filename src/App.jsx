@@ -152,11 +152,14 @@ const demoDetail = {
       scores: "245/300",
     },
   ],
+  others:
+    "I write, erase, rewrite\nErase again, and then\nA poppy blooms.\n\nby Tachibana Hokushi",
 };
 
 export default function App() {
   const [personal, setPersonal] = useState(demoDetail.personal);
   const [tech, setTech] = useState(demoDetail.tech);
+  const [others, setOthers] = useState(demoDetail.others);
   const [educ, setEduc] = useState(educDefault);
   const [exp, setExp] = useState(expDefault);
   const [project, setProject] = useState(projectDefault);
@@ -200,6 +203,7 @@ export default function App() {
     setCertificates([]);
     setLanguages([]);
     setCustomize(defaultCustomize);
+    setOthers("");
   }
 
   function handleClickDemoDetail() {
@@ -211,6 +215,7 @@ export default function App() {
     setProjects(demoDetail.projects);
     setCertificates(demoDetail.certificates);
     setLanguages(demoDetail.languages);
+    setOthers(demoDetail.others);
   }
 
   function handleChangePersonal(e) {
@@ -219,6 +224,10 @@ export default function App() {
 
   function handleChangeTech(e) {
     setTech(e.target.value);
+  }
+
+  function handleChangeOthers(e) {
+    setOthers(e.target.value);
   }
 
   function handleChangeEduc(e) {
@@ -365,6 +374,8 @@ export default function App() {
           onPersonal={handleChangePersonal}
           tech={tech}
           onTech={handleChangeTech}
+          others={others}
+          onOthers={handleChangeOthers}
           educ={educ}
           onEduc={handleChangeEduc}
           exp={exp}
@@ -387,6 +398,7 @@ export default function App() {
           selectedEdit={selectedEdit}
           personal={personal}
           tech={tech}
+          others={others}
           educ={educ}
           educations={educations}
           exp={exp}
@@ -500,6 +512,7 @@ function InformationSection(props) {
             onLang={props.onLang}
             languages={props.languages}
           />
+          <OthersBox others={props.others} onOthers={props.onOthers} />
         </>
       )}
 
@@ -556,8 +569,6 @@ function DetailBox({ onClear, onDemo, onPDF }) {
   );
 }
 
-/////////////////////////////
-
 function SavePDFButton({ onPDF }) {
   return (
     <button className="save-pdf-btn small-btn" onClick={onPDF}>
@@ -567,8 +578,6 @@ function SavePDFButton({ onPDF }) {
     </button>
   );
 }
-
-///////////////////////////////
 
 function BoxInput({ title, icon, dataIndex, data, defaultProp, children }) {
   return (
@@ -595,7 +604,7 @@ function BoxInput({ title, icon, dataIndex, data, defaultProp, children }) {
 }
 
 function Topic({ title, icon, dataIndex, selected = "", onSelected = "" }) {
-  const toggleBox = dataIndex !== 0 && dataIndex !== 4;
+  const toggleBox = dataIndex !== 0 && dataIndex !== 4 && dataIndex !== 7;
   return (
     <header>
       <button
@@ -997,6 +1006,23 @@ function LanguageForm({ onDelete, onCancel, onSave, lang, onLang }) {
   );
 }
 
+function OthersBox({ others, onOthers }) {
+  return (
+    <div className="box">
+      <Topic title="others" icon="square-plus" dataIndex={7} />
+      <OthersForm others={others} onOthers={onOthers} />
+    </div>
+  );
+}
+
+function OthersForm({ others, onOthers }) {
+  return (
+    <form>
+      <TextArea name="others" value={others} onChange={onOthers}></TextArea>
+    </form>
+  );
+}
+
 function Input({ children, name, value, onChange }) {
   return (
     <div>
@@ -1171,6 +1197,7 @@ function CVSection(props) {
             lang={props.lang}
             languages={props.languages}
           />
+          <OthersDetail {...defaultProp} others={props.others} />
         </MainContent>
       </div>
     </section>
@@ -1533,6 +1560,21 @@ function LanguageDetail({ isHide, langTest, scores }) {
         </>
       )}
     </li>
+  );
+}
+
+function OthersDetail({ others = "reference", colorTitle, bgTitle }) {
+  const isEmpty = !others.length;
+
+  return (
+    <DetailLayout
+      title="Others"
+      isEmpty={isEmpty}
+      colorTitle={colorTitle}
+      bgTitle={bgTitle}
+    >
+      {others && <pre>{others}</pre>}
+    </DetailLayout>
   );
 }
 

@@ -16,4 +16,5 @@ export {
   faEnvelope,
   faPhone,
   faLocationDot,
+  faSquarePlus,
 } from "@fortawesome/free-solid-svg-icons";

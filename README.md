@@ -1,5 +1,5 @@
 # cv-application
 
-This project is build by using React in order to practice using useState hook and props.
+This project is built by using React in order to practice using the useState hook and props.
 
-Users can fill their own contents, style the CV according to their preference, and print the document as PDF for using in real world.
+Users can fill in their own content, style the CV according to their preference, and print the document as a PDF that can be used in the real world.
